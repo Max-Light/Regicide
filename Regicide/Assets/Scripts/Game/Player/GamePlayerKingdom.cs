@@ -45,7 +45,7 @@ namespace Regicide.Game.Player
         [Server]
         public void AddEntityOwnership(Entity entity)
         {
-            entity.AssignEntityOwnership(this);
+            entity.AssignEntityOwnership(GamePlayer.Players[netId]);
             syncOwnedEntities.Add(entity.netId);
             OwnedEntities.Add(entity);
         }

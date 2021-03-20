@@ -1,5 +1,6 @@
 using Mirror;
 using Regicide.Game.Player;
+using System;
 using System.Collections.Generic;
 
 namespace Regicide.Game.Entities
@@ -31,7 +32,7 @@ namespace Regicide.Game.Entities
             Entities.Remove(netId);
         }
 
-        private void OnEntityOwnerChange(int playerId, int _)
+        protected virtual void OnEntityOwnerChange(int _, int playerId)
         {
             if (playerId >= 0 && GamePlayer.Players.TryGetValue((uint)playerId, out GamePlayer player))
             {
@@ -45,7 +46,7 @@ namespace Regicide.Game.Entities
         }
 
         [Server]
-        public void AssignEntityOwnership(GamePlayerKingdom owner)
+        public void AssignEntityOwnership(GamePlayer owner)
         {
             if (owner != null)
             {
@@ -59,6 +60,18 @@ namespace Regicide.Game.Entities
         {
             netIdentity.RemoveClientAuthority();
             playerId = -1;
+        }
+
+        public bool HasOwner()
+        {
+            if (playerOwner == null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }
