@@ -6,8 +6,8 @@ namespace Regicide.Game.Entities
 {
     public class County : Entity
     {
-        [SerializeField] protected List<Settlement> settlements = new List<Settlement>();
-        public List<Settlement> Settlements { get => settlements; }
+        [SerializeField] protected Settlement[] settlements = null;
+        public Settlement[] Settlements { get => settlements; }
 
         public static Dictionary<uint, County> Counties { get; private set; } = new Dictionary<uint, County>();
 
