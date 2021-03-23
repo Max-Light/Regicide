@@ -7,9 +7,9 @@ namespace Regicide.Game.Player
     {
         public CameraMovementCommand() { }
 
-        public void Execute(Rigidbody2D cameraRigidbody, Vector2 moveVector, float speed)
+        public void Execute(Rigidbody2D playerRigidbody, Vector2 moveVector, float speed)
         {
-            cameraRigidbody.velocity = moveVector * speed * Time.fixedDeltaTime;
+            playerRigidbody.velocity = moveVector * speed * Time.fixedDeltaTime;
         }
     }
 }

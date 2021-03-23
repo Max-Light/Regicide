@@ -39,6 +39,11 @@ namespace Regicide.Game.Player
             LocalPlayer = this;
             playerCamera.gameObject.SetActive(true);
             playerCanvas.gameObject.SetActive(true);
+            for (int cameraIndex = 0; cameraIndex < Camera.allCamerasCount; cameraIndex++)
+            {
+                Camera.allCameras[cameraIndex].enabled = false;
+            }
+            playerCamera.enabled = true;
         }
 
         public override void OnStartClient()

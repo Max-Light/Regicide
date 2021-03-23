@@ -13,10 +13,11 @@ namespace Regicide.Game.Player
         [SerializeField] private Rigidbody2D playerRigidbody = null;
         [SerializeField] private BoxCollider2D cameraCollider = null;
         [SerializeField] private float movementSpeed = 1;
+        [SerializeField] private float zoomIncrement = 1;
         [SerializeField] private float zoomSpeed = 1;
 
-        private CameraMovementCommand moveCommand = new CameraMovementCommand();
-        private CameraZoomCommand zoomCommand = new CameraZoomCommand();
+        private CameraMovementCommand moveCommand = null;
+        private CameraZoomCommand zoomCommand = null;
  
         private void OnValidate()
         {
@@ -27,6 +28,8 @@ namespace Regicide.Game.Player
         private void Awake()
         {
             controller = new PlayerCameraController();
+            moveCommand = new CameraMovementCommand();
+            zoomCommand = new CameraZoomCommand(cinemachineCamera.m_Lens.OrthographicSize);
         }
 
         public override void OnStartAuthority()
@@ -57,7 +60,7 @@ namespace Regicide.Game.Player
             controller.Enable();
             controller.PlayerCameraMovement.CameraMove.performed += context => moveCommand.Execute(playerRigidbody, context.ReadValue<Vector2>().normalized, movementSpeed);
             controller.PlayerCameraMovement.CameraMove.canceled += context => moveCommand.Execute(playerRigidbody, Vector2.zero, 0);
-            controller.PlayerCameraMovement.CameraZoom.performed += context => zoomCommand.Execute(cinemachineCamera, cameraCollider, Mathf.Clamp(context.ReadValue<float>(), -1, 1), zoomSpeed);
+            controller.PlayerCameraMovement.CameraZoom.performed += context => zoomCommand.Execute(cinemachineCamera, Mathf.Clamp(context.ReadValue<float>(), -1, 1), zoomIncrement);
         }
 
         private void ActivateCinemachineCamera()
@@ -78,6 +81,11 @@ namespace Regicide.Game.Player
             cameraCollider.enabled = true;
             LensSettings virtualCameraLens = cinemachineCamera.m_Lens;
             cameraCollider.size = new Vector2(virtualCameraLens.OrthographicSize * virtualCameraLens.Aspect * 2, virtualCameraLens.OrthographicSize * 2);
+        }
+
+        private void FixedUpdate()
+        {
+            zoomCommand.UpdateOrhtoGrahpicSizeWithZoomMovement(playerRigidbody, cinemachineCamera, cameraCollider, zoomSpeed);
         }
     }
 }

@@ -103,6 +103,7 @@ MonoBehaviour:
   playerRigidbody: {fileID: 6652329288471674341}
   cameraCollider: {fileID: 3720230806690471782}
   movementSpeed: 500
+  zoomIncrement: 1
   zoomSpeed: 10
 --- !u!50 &6652329288471674341
 Rigidbody2D:
@@ -350,7 +351,7 @@ GameObject:
   - component: {fileID: 181027615497185983}
   m_Layer: 6
   m_Name: Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
