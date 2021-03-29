@@ -3,8 +3,13 @@ using UnityEngine;
 
 namespace Regicide.Game.GameStates
 {
-    public class PlayState : ServerGameState
+    public class PlayServerState : GameServerState
     {
+        public PlayServerState()
+        {
+            ClientStateId = new PlayClientState().GameStateId;
+        }
+
         public override void OnStateEnable(ServerGameStateCycler cycler)
         {
             base.OnStateEnable(cycler);

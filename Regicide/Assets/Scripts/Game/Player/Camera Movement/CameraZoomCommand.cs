@@ -32,14 +32,7 @@ namespace Regicide.Game.Player
             }
         }
 
-        public void UpdateOrthographicSize(CinemachineVirtualCamera virtualCamera, BoxCollider2D cameraCollider, float zoomSpeed)
-        {
-            LensSettings virtualCameraLens = virtualCamera.m_Lens;
-            virtualCamera.m_Lens.OrthographicSize = Mathf.Lerp(virtualCameraLens.OrthographicSize, targetOrthographicSize, Time.fixedDeltaTime * zoomSpeed);
-            cameraCollider.size = new Vector2(virtualCameraLens.OrthographicSize * virtualCamera.m_Lens.Aspect * 2, virtualCameraLens.OrthographicSize * 2);
-        }
-
-        public void UpdateOrhtoGrahpicSizeWithZoomMovement(Rigidbody2D playerRigidbody, CinemachineVirtualCamera virtualCamera, BoxCollider2D cameraCollider, float zoomSpeed)
+        public void UpdateOrhtoGrahpicSize(Rigidbody2D playerRigidbody, CinemachineVirtualCamera virtualCamera, BoxCollider2D cameraCollider, float zoomSpeed)
         {
             LensSettings virtualCameraLens = virtualCamera.m_Lens;
             float newOrthographicSize = Mathf.Lerp(virtualCameraLens.OrthographicSize, targetOrthographicSize, Time.fixedDeltaTime * zoomSpeed);

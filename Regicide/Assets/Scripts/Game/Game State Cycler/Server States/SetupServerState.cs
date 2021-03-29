@@ -5,9 +5,14 @@ using UnityEngine;
 
 namespace Regicide.Game.GameStates
 {
-    public class SetupState : ServerGameState
+    public class SetupServerState : GameServerState
     {
         PlayerCountyAssignmentTurnCycler activeTurnCycler = null;
+
+        public SetupServerState()
+        {
+            ClientStateId = new SetupClientState().GameStateId;
+        }
 
         public override void OnStateEnable(ServerGameStateCycler cycler)
         {

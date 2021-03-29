@@ -1,7 +1,5 @@
 using Mirror;
 using Regicide.Game.PlayerTurnSystem;
-using System;
-using System.Collections;
 using UnityEngine;
 
 namespace Regicide.Game.GameStates
@@ -9,8 +7,9 @@ namespace Regicide.Game.GameStates
     public class ServerGameStateCycler : NetworkBehaviour
     {
         public static ServerGameStateCycler Singleton { get; private set; } = null;
-        private ServerGameState gameState = ServerGameState.Nil;
+        private GameServerState currentGameState = GameServerState.Nil;
 
+        [SerializeField] private ClientGameStateCycler clientStateCycler = null;
         [SerializeField] private PlayerCountyAssignmentTurnCycler countyAssignmentTurnCyclerPrefab = null;
 
         private void Awake()
@@ -29,7 +28,8 @@ namespace Regicide.Game.GameStates
         public override void OnStartServer()
         {
             base.OnStartServer();
-            SwitchToGameState(new WaitForPlayersState());
+            clientStateCycler = ClientGameStateCycler.Singleton;
+            SwitchToGameServerState(new WaitForPlayersServerState());
         }
 
         private void OnDestroy()
@@ -41,29 +41,19 @@ namespace Regicide.Game.GameStates
         }
 
         [Server]
-        public void SwitchToGameState(ServerGameState gameState)
+        public void SwitchToGameServerState(GameServerState gameState)
         {
-            this.gameState.OnStateDisable(this);
-            ServerGameState oldState = this.gameState;
-            this.gameState = gameState;
-            this.gameState.OnStateEnable(this);
-
-            callback?.Invoke(oldState, gameState);
+            if (gameState == null)
+            {
+                gameState = GameServerState.Nil;
+            }
+            currentGameState.OnStateDisable(this);
+            currentGameState = gameState;
+            currentGameState.OnStateEnable(this);
+            clientStateCycler.SetClientGameState(gameState.ClientStateId);
         }
 
         [Server]
         public PlayerCountyAssignmentTurnCycler InstantiateCountyAssignmentTurnCycler() => Instantiate(countyAssignmentTurnCyclerPrefab.gameObject).GetComponent<PlayerCountyAssignmentTurnCycler>();
-
-        private Action<ServerGameState, ServerGameState> callback = null;
-
-        public void AddObserver(Action<ServerGameState, ServerGameState> observer)
-        {
-            callback += observer;
-        }
-
-        public void RemoveObserver(Action<ServerGameState, ServerGameState> observer)
-        {
-            callback -= observer;
-        }
     }
 }

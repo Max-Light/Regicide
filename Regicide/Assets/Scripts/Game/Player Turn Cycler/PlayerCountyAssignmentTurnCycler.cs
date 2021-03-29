@@ -18,7 +18,7 @@ namespace Regicide.Game.PlayerTurnSystem
         private List<GamePlayer> players = new List<GamePlayer>();
         private HashSet<County> availableCounties = new HashSet<County>();
 
-        public PlayerCountyAssignmentTurnCycler Singleton { get; private set; } = null;
+        public static PlayerCountyAssignmentTurnCycler Singleton { get; private set; } = null;
 
         private void Awake()
         {
@@ -43,7 +43,14 @@ namespace Regicide.Game.PlayerTurnSystem
         {
             players = GamePlayer.Players.Values.ToList();
             playerTurn = (int)players[playerTurnIndex].netId;
-            CheckToStartGamePlay();
+        }
+
+        private void Start()
+        {
+            if (isServer)
+            {
+                CheckToStartGamePlay();
+            }
         }
 
         private void OnDestroy()
@@ -85,7 +92,8 @@ namespace Regicide.Game.PlayerTurnSystem
         [Server]
         private void AssignCountyToPlayer(County county)
         {
-            county.AssignEntityOwnership(CurrentPlayerTurn);
+            ICommand entityAssignment = new AssignEntityCommand(county, CurrentPlayerTurn);
+            entityAssignment.Execute();
         }
 
         [Server]
@@ -115,7 +123,7 @@ namespace Regicide.Game.PlayerTurnSystem
         {
             if (AllCountiesAssigned())
             {
-                ServerGameStateCycler.Singleton.SwitchToGameState(new PlayState());
+                ServerGameStateCycler.Singleton.SwitchToGameServerState(new PlayServerState());
             }
         }
 

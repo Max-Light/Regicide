@@ -5,9 +5,14 @@ using UnityEngine;
 
 namespace Regicide.Game.GameStates
 {
-    public class WaitForPlayersState : ServerGameState
+    public class WaitForPlayersServerState : GameServerState
     {
         private int currentPlayerCount = 0;
+
+        public WaitForPlayersServerState()
+        {
+            ClientStateId = new WaitForPlayersClientState().GameStateId;
+        }
 
         public override void OnStateEnable(ServerGameStateCycler cycler)
         {
@@ -40,7 +45,7 @@ namespace Regicide.Game.GameStates
         {
             if (currentPlayerCount == NetworkServer.connections.Count)
             {
-                ServerGameStateCycler.Singleton.SwitchToGameState(new SetupState());
+                ServerGameStateCycler.Singleton.SwitchToGameServerState(new SetupServerState());
             }
         }
     }

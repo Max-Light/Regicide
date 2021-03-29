@@ -85,7 +85,7 @@ namespace Regicide.Game.Player
 
         private void FixedUpdate()
         {
-            zoomCommand.UpdateOrhtoGrahpicSizeWithZoomMovement(playerRigidbody, cinemachineCamera, cameraCollider, zoomSpeed);
+            zoomCommand.UpdateOrhtoGrahpicSize(playerRigidbody, cinemachineCamera, cameraCollider, zoomSpeed);
         }
     }
 }
