@@ -4,35 +4,24 @@ using UnityEngine.InputSystem;
 
 namespace Regicide.Game.Player
 {
-    public class CameraZoomCommand
+    public class CameraZoomCommand : ICommand
     {
-        private float minOrthographicSize = 3;
-        private float maxOrthographicSize = 10;
-
+        Rigidbody2D playerRigidbody = null;
+        CinemachineVirtualCamera virtualCamera = null;
+        BoxCollider2D cameraCollider = null;
+        private float zoomSpeed = 0;
         private float targetOrthographicSize = 0;
 
-        public CameraZoomCommand(float startingOrthographicSize) 
-        { 
-            targetOrthographicSize = startingOrthographicSize;
-        }
-        public CameraZoomCommand(float startingOrthographicSize, float minOrthographicSize, float maxOrthographicSize)
+        public CameraZoomCommand(Rigidbody2D playerRigidbody, CinemachineVirtualCamera virtualCamera, BoxCollider2D cameraCollider, float targetOrthographicSize, float zoomSpeed)
         {
-            targetOrthographicSize = startingOrthographicSize;
-            this.minOrthographicSize = minOrthographicSize;
-            this.maxOrthographicSize = maxOrthographicSize;
+            this.playerRigidbody = playerRigidbody;
+            this.virtualCamera = virtualCamera;
+            this.cameraCollider = cameraCollider;
+            this.targetOrthographicSize = targetOrthographicSize;
+            this.zoomSpeed = zoomSpeed;
         }
 
-        public void Execute(CinemachineVirtualCamera virtualCamera, float scrollDelta, float zoomIncrement)
-        {
-            if (scrollDelta != 0)
-            {
-                float newOrthographicSize = virtualCamera.m_Lens.OrthographicSize;
-                newOrthographicSize += zoomIncrement * -scrollDelta;
-                targetOrthographicSize = Mathf.Clamp(newOrthographicSize, minOrthographicSize, maxOrthographicSize);
-            }
-        }
-
-        public void UpdateOrhtoGrahpicSize(Rigidbody2D playerRigidbody, CinemachineVirtualCamera virtualCamera, BoxCollider2D cameraCollider, float zoomSpeed)
+        public void Execute()
         {
             LensSettings virtualCameraLens = virtualCamera.m_Lens;
             float newOrthographicSize = Mathf.Lerp(virtualCameraLens.OrthographicSize, targetOrthographicSize, Time.fixedDeltaTime * zoomSpeed);

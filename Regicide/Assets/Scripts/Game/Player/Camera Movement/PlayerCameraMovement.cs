@@ -15,10 +15,19 @@ namespace Regicide.Game.Player
         [SerializeField] private float movementSpeed = 1;
         [SerializeField] private float zoomIncrement = 1;
         [SerializeField] private float zoomSpeed = 1;
+        [SerializeField] private float minOrthographicSize = 3;
+        [SerializeField] private float maxOrthographicSize = 10;
+        private float targetOrthographicSize = 0;
 
-        private CameraMovementCommand moveCommand = null;
-        private CameraZoomCommand zoomCommand = null;
- 
+        public float TargetOrthographicSize
+        {
+            get => targetOrthographicSize;
+            set
+            {
+                targetOrthographicSize = Mathf.Clamp(value, minOrthographicSize, maxOrthographicSize);
+            }
+        }
+
         private void OnValidate()
         {
             playerRigidbody = GetComponent<Rigidbody2D>();
@@ -28,8 +37,7 @@ namespace Regicide.Game.Player
         private void Awake()
         {
             controller = new PlayerCameraController();
-            moveCommand = new CameraMovementCommand();
-            zoomCommand = new CameraZoomCommand(cinemachineCamera.m_Lens.OrthographicSize);
+            targetOrthographicSize = cinemachineCamera.m_Lens.OrthographicSize;
         }
 
         public override void OnStartAuthority()
@@ -58,9 +66,21 @@ namespace Regicide.Game.Player
         private void ActivatePlayerCameraControlScheme()
         {
             controller.Enable();
-            controller.PlayerCameraMovement.CameraMove.performed += context => moveCommand.Execute(playerRigidbody, context.ReadValue<Vector2>().normalized, movementSpeed);
-            controller.PlayerCameraMovement.CameraMove.canceled += context => moveCommand.Execute(playerRigidbody, Vector2.zero, 0);
-            controller.PlayerCameraMovement.CameraZoom.performed += context => zoomCommand.Execute(cinemachineCamera, Mathf.Clamp(context.ReadValue<float>(), -1, 1), zoomIncrement);
+            controller.PlayerCameraMovement.CameraMove.performed += context =>
+            {
+                ICommand moveCommand = new CameraMovementCommand(playerRigidbody, context.ReadValue<Vector2>().normalized, movementSpeed);
+                moveCommand.Execute();
+            };
+            controller.PlayerCameraMovement.CameraMove.canceled += context =>
+            {
+                ICommand moveCommand = new CameraMovementCommand(playerRigidbody, Vector2.zero, 0);
+                moveCommand.Execute();
+            };
+            controller.PlayerCameraMovement.CameraZoom.performed += context =>
+            {
+                ICommand newTargetOrthographicSizeCommand = new CameraSetTargetOrthographicSizeCommand(this, Mathf.Clamp(context.ReadValue<float>(), -1, 1), zoomIncrement);
+                newTargetOrthographicSizeCommand.Execute();
+            };
         }
 
         private void ActivateCinemachineCamera()
@@ -85,7 +105,8 @@ namespace Regicide.Game.Player
 
         private void FixedUpdate()
         {
-            zoomCommand.UpdateOrhtoGrahpicSize(playerRigidbody, cinemachineCamera, cameraCollider, zoomSpeed);
+            ICommand cameraZoomCommand = new CameraZoomCommand(playerRigidbody, cinemachineCamera, cameraCollider, targetOrthographicSize, zoomSpeed);
+            cameraZoomCommand.Execute();
         }
     }
 }

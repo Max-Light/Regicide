@@ -3,13 +3,22 @@ using UnityEngine;
 
 namespace Regicide.Game.Player
 {
-    public class CameraMovementCommand
+    public class CameraMovementCommand : ICommand
     {
-        public CameraMovementCommand() { }
+        private Rigidbody2D playerRigidbody = null;
+        private Vector2 moveDirection = Vector2.zero;
+        float moveSpeed = 0;
 
-        public void Execute(Rigidbody2D playerRigidbody, Vector2 moveVector, float speed)
+        public CameraMovementCommand(Rigidbody2D playerRigidbody, Vector2 moveDirection, float moveSpeed) 
         {
-            playerRigidbody.velocity = moveVector * speed * Time.fixedDeltaTime;
+            this.playerRigidbody = playerRigidbody;
+            this.moveDirection = moveDirection;
+            this.moveSpeed = moveSpeed;
+        }
+
+        public void Execute()
+        {
+            playerRigidbody.velocity = moveDirection * moveSpeed * Time.fixedDeltaTime;
         }
     }
 }
