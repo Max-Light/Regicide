@@ -7,7 +7,7 @@ namespace Regicide.Game.GameStates
 {
     public class SetupServerState : GameServerState
     {
-        PlayerCountyAssignmentTurnCycler activeTurnCycler = null;
+        PlayerCountyAssignmentTurnCycler _activeTurnCycler = null;
 
         public SetupServerState()
         {
@@ -18,15 +18,15 @@ namespace Regicide.Game.GameStates
         {
             base.OnStateEnable(cycler);
             Debug.Log("Setting up game");
-            activeTurnCycler = cycler.InstantiateCountyAssignmentTurnCycler();
-            NetworkServer.Spawn(activeTurnCycler.gameObject);
+            _activeTurnCycler = cycler.InstantiateCountyAssignmentTurnCycler();
+            NetworkServer.Spawn(_activeTurnCycler.gameObject);
         }
 
         public override void OnStateDisable(ServerGameStateCycler cycler)
         {
             base.OnStateDisable(cycler);
-            NetworkServer.Destroy(activeTurnCycler.gameObject);
-            activeTurnCycler = null;
+            NetworkServer.Destroy(_activeTurnCycler.gameObject);
+            _activeTurnCycler = null;
         }
     }
 }

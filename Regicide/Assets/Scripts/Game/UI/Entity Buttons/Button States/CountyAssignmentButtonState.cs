@@ -5,11 +5,11 @@ namespace Regicide.UI
 {
     public class CountyAssignmentButtonState : UIButtonState
     {
-        private CountyUIButton button = null;
+        private CountyUIButton _button = null;
 
         public CountyAssignmentButtonState(CountyUIButton button) : base(button)
         {
-            this.button = button;
+            this._button = button;
         }
 
         public override void OnStateEnable()

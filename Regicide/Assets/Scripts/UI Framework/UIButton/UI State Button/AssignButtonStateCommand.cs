@@ -6,16 +6,16 @@ namespace UI
 {
     public class AssignButtonStateCommand<TState> : ICommand where TState : UIButtonState
     {
-        private IEnumerable<UIStateButtonFramework> stateButtons = null;
+        private IEnumerable<UIStateButtonFramework> _stateButtons = null;
 
         public AssignButtonStateCommand(IEnumerable<UIStateButtonFramework> stateButtons)
         {
-            this.stateButtons = stateButtons;
+            this._stateButtons = stateButtons;
         }
 
         public void Execute()
         {
-            foreach (UIStateButtonFramework button in stateButtons)
+            foreach (UIStateButtonFramework button in _stateButtons)
             {
                 TState state = Activator.CreateInstance(typeof(TState)) as TState;
                 button.SetButtonState(state);

@@ -13,12 +13,56 @@ namespace Regicide.Game.PlayerTurnSystem
     public class PlayerCountyAssignmentTurnCycler : NetworkBehaviour 
     {
         [SyncVar(hook = nameof(OnPlayerTurnChange))]
-        private int playerTurn = -1;
-        private int playerTurnIndex = 0;
-        private List<GamePlayer> players = new List<GamePlayer>();
-        private HashSet<County> availableCounties = new HashSet<County>();
+        private int _playerTurn = -1;
+        private int _playerTurnIndex = 0;
+        private List<GamePlayer> _players = new List<GamePlayer>();
+        private HashSet<County> _availableCounties = new HashSet<County>();
 
         public static PlayerCountyAssignmentTurnCycler Singleton { get; private set; } = null;
+
+        public GamePlayer CurrentPlayerTurn
+        {
+            get
+            {
+                if (_playerTurn >= 0 && GamePlayer.Players.TryGetValue((uint)_playerTurn, out GamePlayer player))
+                {
+                    return player;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            InitializeTurnCycle();
+        }
+
+        public void InitializeTurnCycle()
+        {
+            _players = GamePlayer.Players.Values.ToList();
+            _playerTurn = (int)_players[_playerTurnIndex].netId;
+        }
+
+        [Client]
+        public void ExecuteTurn(GamePlayer player, County county)
+        {
+            CmdExecuteTurn(player.netId, county.netId);
+        }
+
+        [Server]
+        public void SetPlayerTurn(int playerTurnIndex)
+        {
+            if (playerTurnIndex >= _players.Count)
+            {
+                Debug.LogError("Index is out of bounds");
+                return;
+            }
+            _playerTurn = (int)_players[playerTurnIndex].netId;
+        }
 
         private void Awake()
         {
@@ -31,18 +75,6 @@ namespace Regicide.Game.PlayerTurnSystem
                 Debug.LogWarning("Multiple county assignment turn cyclers detected! Destroying superfluous cyclers...");
                 Destroy(this);
             }
-        }
-
-        public override void OnStartServer()
-        {
-            base.OnStartServer();
-            InitializeTurnCycle();
-        }
-
-        public void InitializeTurnCycle()
-        {
-            players = GamePlayer.Players.Values.ToList();
-            playerTurn = (int)players[playerTurnIndex].netId;
         }
 
         private void Start()
@@ -65,14 +97,8 @@ namespace Regicide.Game.PlayerTurnSystem
         {
             if (GamePlayer.Players.TryGetValue((uint)playerId, out GamePlayer player))
             {
-                callback?.Invoke(player);
+                
             }
-        }
-
-        [Client]
-        public void ExecuteTurn(GamePlayer player, County county)
-        {
-            CmdExecuteTurn(player.netId, county.netId);
         }
 
         [Command]
@@ -99,23 +125,12 @@ namespace Regicide.Game.PlayerTurnSystem
         [Server]
         private void ChangeTurn()
         {
-            playerTurnIndex++;
-            if (playerTurnIndex >= players.Count)
+            _playerTurnIndex++;
+            if (_playerTurnIndex >= _players.Count)
             {
-                playerTurnIndex = 0;
+                _playerTurnIndex = 0;
             }
-            playerTurn = (int)players[playerTurnIndex].netId;
-        }
-
-        [Server]
-        public void SetPlayerTurn(int playerTurnIndex)
-        {
-            if (playerTurnIndex >= players.Count)
-            {
-                Debug.LogError("Index is out of bounds");
-                return;
-            }
-            playerTurn = (int)players[playerTurnIndex].netId;
+            _playerTurn = (int)_players[_playerTurnIndex].netId;
         }
 
         [Server]
@@ -138,33 +153,6 @@ namespace Regicide.Game.PlayerTurnSystem
                 }
             }
             return true;
-        }
-
-        public GamePlayer CurrentPlayerTurn 
-        { 
-            get 
-            {
-                if (playerTurn >= 0 && GamePlayer.Players.TryGetValue((uint)playerTurn, out GamePlayer player))
-                {
-                    return player;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        private Action<GamePlayer> callback = null;
-
-        public void AddObserver(Action<GamePlayer> observer)
-        {
-            callback += observer;
-        }
-
-        public void RemoveObserver(Action<GamePlayer> observer)
-        {
-            callback -= observer;
         }
     }
 }

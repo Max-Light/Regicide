@@ -7,7 +7,7 @@ namespace Regicide.Game.GameStates
 {
     public class WaitForPlayersServerState : GameServerState
     {
-        private int currentPlayerCount = 0;
+        private int _currentPlayerCount = 0;
 
         public WaitForPlayersServerState()
         {
@@ -32,18 +32,18 @@ namespace Regicide.Game.GameStates
             switch (op) 
             {
                 case GamePlayer.Operation.ADD:
-                    currentPlayerCount++;
+                    _currentPlayerCount++;
                     CheckToStartGame();
                     break;
                 case GamePlayer.Operation.REMOVE:
-                    currentPlayerCount--;
+                    _currentPlayerCount--;
                     break;
             }
         }
 
         private void CheckToStartGame()
         {
-            if (currentPlayerCount == NetworkServer.connections.Count)
+            if (_currentPlayerCount == NetworkServer.connections.Count)
             {
                 ServerGameStateCycler.Singleton.SwitchToGameServerState(new SetupServerState());
             }

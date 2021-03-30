@@ -8,9 +8,9 @@ namespace Regicide.Game.Entities
     public abstract class Entity : NetworkBehaviour
     {
         [SyncVar(hook = nameof(OnEntityOwnerChange))]
-        private int playerId = -1;
+        private int _playerId = -1;
 
-        protected GamePlayer playerOwner = null;
+        protected GamePlayer _playerOwner = null;
 
         public static Dictionary<uint, Entity> Entities { get; private set; } = new Dictionary<uint, Entity>();
 
@@ -36,12 +36,12 @@ namespace Regicide.Game.Entities
         {
             if (playerId >= 0 && GamePlayer.Players.TryGetValue((uint)playerId, out GamePlayer player))
             {
-                playerOwner = player;
+                _playerOwner = player;
             }
             else
             {
-                this.playerId = -1;
-                playerOwner = null;
+                _playerId = -1;
+                _playerOwner = null;
             }
         }
 
@@ -51,7 +51,7 @@ namespace Regicide.Game.Entities
             if (owner != null)
             {
                 netIdentity.AssignClientAuthority(owner.netIdentity.connectionToClient);
-                playerId = (int)owner.netId;
+                _playerId = (int)owner.netId;
             }
         }
 
@@ -59,12 +59,12 @@ namespace Regicide.Game.Entities
         public void RemoveEntityOwnership()
         {
             netIdentity.RemoveClientAuthority();
-            playerId = -1;
+            _playerId = -1;
         }
 
         public bool HasOwner()
         {
-            if (playerOwner == null)
+            if (_playerOwner == null)
             {
                 return false;
             }

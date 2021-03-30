@@ -5,29 +5,29 @@ namespace UI
 {
     public class UIButtonSpriteOutline : MonoBehaviour, IUIButtonHoverResponse
     {
-        private Material spriteDefaultMaterial = null;
-        [SerializeField] private Material spriteOutlineMaterial = null;
+        private Material _spriteDefaultMaterial = null;
+        [SerializeField] private Material _spriteOutlineMaterial = null;
 
-        [SerializeField] private SpriteRenderer spriteRenderer = null;
+        [SerializeField] private SpriteRenderer _spriteRenderer = null;
 
         private void OnValidate()
         {
-            spriteRenderer = GetComponent<SpriteRenderer>();
+            _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         private void Awake()
         {
-            spriteDefaultMaterial = spriteRenderer.material;
+            _spriteDefaultMaterial = _spriteRenderer.material;
         }
 
         public void OnDeselect(UIButtonFramework button)
         {
-            spriteRenderer.material = spriteDefaultMaterial;
+            _spriteRenderer.material = _spriteDefaultMaterial;
         }
 
         public void OnSelect(UIButtonFramework button)
         {
-            spriteRenderer.material = spriteOutlineMaterial;
+            _spriteRenderer.material = _spriteOutlineMaterial;
         }
     }
 }

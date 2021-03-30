@@ -8,8 +8,8 @@ namespace Regicide.Game.GameStates
         public static ClientGameStateCycler Singleton { get; private set; } = null;
 
         [SyncVar(hook = nameof(OnGameStateChange))]
-        private uint gameStateId = GameClientState.Nil.GameStateId;
-        private GameClientState currentGameState = GameClientState.Nil;
+        private uint _gameStateId = GameClientState.Nil.GameStateId;
+        private GameClientState _currentGameState = GameClientState.Nil;
 
         private void Awake()
         {
@@ -28,7 +28,7 @@ namespace Regicide.Game.GameStates
         public override void OnStartClient()
         {
             base.OnStartClient();
-            SwitchToGameClientState(GameClientStateFactory.GetGameState(gameStateId));
+            SwitchToGameClientState(GameClientStateFactory.GetGameState(_gameStateId));
         }
 
         private void OnDestroy()
@@ -51,15 +51,15 @@ namespace Regicide.Game.GameStates
             {
                 gameState = GameClientState.Nil;
             }
-            currentGameState.OnStateDisable(this);
-            currentGameState = gameState;
-            currentGameState.OnStateEnable(this);
+            _currentGameState.OnStateDisable(this);
+            _currentGameState = gameState;
+            _currentGameState.OnStateEnable(this);
         }
 
         [Server]
         public void SetClientGameState(uint clientStateId)
         {
-            gameStateId = clientStateId;
+            _gameStateId = clientStateId;
         }
     }
 }

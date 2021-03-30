@@ -7,10 +7,10 @@ namespace Regicide.Game.GameStates
     public class ServerGameStateCycler : NetworkBehaviour
     {
         public static ServerGameStateCycler Singleton { get; private set; } = null;
-        private GameServerState currentGameState = GameServerState.Nil;
+        private GameServerState _currentGameState = GameServerState.Nil;
 
-        [SerializeField] private ClientGameStateCycler clientStateCycler = null;
-        [SerializeField] private PlayerCountyAssignmentTurnCycler countyAssignmentTurnCyclerPrefab = null;
+        [SerializeField] private ClientGameStateCycler _clientStateCycler = null;
+        [SerializeField] private PlayerCountyAssignmentTurnCycler _countyAssignmentTurnCyclerPrefab = null;
 
         private void Awake()
         {
@@ -28,7 +28,7 @@ namespace Regicide.Game.GameStates
         public override void OnStartServer()
         {
             base.OnStartServer();
-            clientStateCycler = ClientGameStateCycler.Singleton;
+            _clientStateCycler = ClientGameStateCycler.Singleton;
             SwitchToGameServerState(new WaitForPlayersServerState());
         }
 
@@ -47,13 +47,13 @@ namespace Regicide.Game.GameStates
             {
                 gameState = GameServerState.Nil;
             }
-            currentGameState.OnStateDisable(this);
-            currentGameState = gameState;
-            currentGameState.OnStateEnable(this);
-            clientStateCycler.SetClientGameState(gameState.ClientStateId);
+            _currentGameState.OnStateDisable(this);
+            _currentGameState = gameState;
+            _currentGameState.OnStateEnable(this);
+            _clientStateCycler.SetClientGameState(gameState.ClientStateId);
         }
 
         [Server]
-        public PlayerCountyAssignmentTurnCycler InstantiateCountyAssignmentTurnCycler() => Instantiate(countyAssignmentTurnCyclerPrefab.gameObject).GetComponent<PlayerCountyAssignmentTurnCycler>();
+        public PlayerCountyAssignmentTurnCycler InstantiateCountyAssignmentTurnCycler() => Instantiate(_countyAssignmentTurnCyclerPrefab.gameObject).GetComponent<PlayerCountyAssignmentTurnCycler>();
     }
 }

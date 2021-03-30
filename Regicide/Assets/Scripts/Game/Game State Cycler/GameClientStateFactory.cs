@@ -8,7 +8,7 @@ namespace Regicide.Game.GameStates
 {
     public static class GameClientStateFactory
     {
-        private static Dictionary<uint, Type> gameStates = new Dictionary<uint, Type>();
+        private static Dictionary<uint, Type> _gameStates = new Dictionary<uint, Type>();
 
         public static void InitializeStateFactory()
         {
@@ -19,9 +19,9 @@ namespace Regicide.Game.GameStates
             foreach (Type type in gameStateTypes)
             {
                 GameClientState stateInstance = Activator.CreateInstance(type) as GameClientState;
-                if (!gameStates.ContainsKey(stateInstance.GameStateId))
+                if (!_gameStates.ContainsKey(stateInstance.GameStateId))
                 {
-                    gameStates.Add(stateInstance.GameStateId, type);
+                    _gameStates.Add(stateInstance.GameStateId, type);
                 }
                 else
                 {
@@ -30,11 +30,11 @@ namespace Regicide.Game.GameStates
             }
         }
 
-        public static void ClearStateFactory() => gameStates.Clear();
+        public static void ClearStateFactory() => _gameStates.Clear();
 
         public static GameClientState GetGameState(uint stateId)
         {
-            if (gameStates.TryGetValue(stateId, out Type typeValue))
+            if (_gameStates.TryGetValue(stateId, out Type typeValue))
             {
                 return Activator.CreateInstance(typeValue) as GameClientState;
             }

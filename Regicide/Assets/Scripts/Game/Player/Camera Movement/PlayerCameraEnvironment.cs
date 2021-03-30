@@ -7,11 +7,13 @@ namespace Regicide.Game.Player
     {
         public static PlayerCameraEnvironment Singleton { get; private set; } = null;
 
-        [SerializeField] private PolygonCollider2D virtualCameraConfinerCollider = null;
+        [SerializeField] private PolygonCollider2D _virtualCameraConfinerCollider = null;
+
+        public PolygonCollider2D VirtualCameraConfinerCollider { get => _virtualCameraConfinerCollider; }
 
         private void OnValidate()
         {
-            virtualCameraConfinerCollider = GetComponent<PolygonCollider2D>();
+            _virtualCameraConfinerCollider = GetComponent<PolygonCollider2D>();
         }
 
         private void Awake()
@@ -36,17 +38,15 @@ namespace Regicide.Game.Player
             }
         }
 
-        public PolygonCollider2D VirtualCameraConfinerCollider { get => virtualCameraConfinerCollider; }
-
         private void CreateCameraColliderBounds()
         {
             EdgeCollider2D cameraBounds = gameObject.AddComponent(typeof(EdgeCollider2D)) as EdgeCollider2D;
-            Vector2[] cameraBoundPoints = new Vector2[virtualCameraConfinerCollider.points.Length + 1];
-            for (int pointIndex = 0; pointIndex < virtualCameraConfinerCollider.points.Length; pointIndex++)
+            Vector2[] cameraBoundPoints = new Vector2[_virtualCameraConfinerCollider.points.Length + 1];
+            for (int pointIndex = 0; pointIndex < _virtualCameraConfinerCollider.points.Length; pointIndex++)
             {
-                cameraBoundPoints[pointIndex] = virtualCameraConfinerCollider.points[pointIndex];
+                cameraBoundPoints[pointIndex] = _virtualCameraConfinerCollider.points[pointIndex];
             }
-            cameraBoundPoints[cameraBoundPoints.Length - 1] = virtualCameraConfinerCollider.points[0];
+            cameraBoundPoints[cameraBoundPoints.Length - 1] = _virtualCameraConfinerCollider.points[0];
             cameraBounds.points = cameraBoundPoints;
         }
     }

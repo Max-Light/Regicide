@@ -3,11 +3,11 @@ namespace UI
 {
     public abstract class UIStateButtonFramework : UIButtonFramework 
     {
-        private UIButtonState state = null;
+        private UIButtonState _state = null;
 
         protected virtual void Awake()
         {
-            state = new NilButtonState(this);
+            _state = new NilButtonState(this);
         }
 
         public void SetButtonState(UIButtonState state)
@@ -16,9 +16,9 @@ namespace UI
             {
                 state = new NilButtonState(this);
             }
-            this.state.OnStateDisable();
-            this.state = state;
-            this.state.OnStateEnable();
+            this._state.OnStateDisable();
+            this._state = state;
+            this._state.OnStateEnable();
         }
     }
 }

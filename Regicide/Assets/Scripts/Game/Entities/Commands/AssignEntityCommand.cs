@@ -4,16 +4,16 @@ namespace Regicide.Game.Entities
 {
     public class AssignEntityCommand : EntityCommand
     {
-        private GamePlayer player = null;
+        private GamePlayer _player = null;
 
         public AssignEntityCommand(Entity entity, GamePlayer player) : base(entity)
         {
-            this.player = player;
+            _player = player;
         }
 
         public override void Execute()
         {
-            entity.AssignEntityOwnership(player);
+            entity.AssignEntityOwnership(_player);
         }
     }
 }

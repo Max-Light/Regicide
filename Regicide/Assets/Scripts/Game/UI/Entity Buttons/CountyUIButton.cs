@@ -9,36 +9,36 @@ namespace Regicide.UI
 {
     public class CountyUIButton : UIStateButtonFramework
     {
-        [SerializeField] private County county = null;
-        [SerializeField] private IUIButtonHoverResponse buttonHoverEffect = null;
+        [SerializeField] private County _county = null;
+        [SerializeField] private IUIButtonHoverResponse _buttonHoverEffect = null;
 
         public static List<CountyUIButton> CountyButtons { get; private set; } = new List<CountyUIButton>();
 
         private void OnValidate()
         {
-            buttonHoverEffect = GetComponent<IUIButtonHoverResponse>();
+            _buttonHoverEffect = GetComponent<IUIButtonHoverResponse>();
         }
 
         private void OnEnable()
         {
             CountyButtons.Add(this);
-            if (buttonHoverEffect != null)
+            if (_buttonHoverEffect != null)
             {
-                AddPointerEnterEvent(() => buttonHoverEffect.OnSelect(this));
-                AddPointerExitEvent(() => buttonHoverEffect.OnDeselect(this));
+                AddPointerEnterEvent(() => _buttonHoverEffect.OnSelect(this));
+                AddPointerExitEvent(() => _buttonHoverEffect.OnDeselect(this));
             }
         }
 
         private void OnDisable()
         {
             CountyButtons.Remove(this);
-            if (buttonHoverEffect != null)
+            if (_buttonHoverEffect != null)
             {
-                RemovePointerEnterEvent(() => buttonHoverEffect.OnSelect(this));
-                RemovePointerExitEvent(() => buttonHoverEffect.OnDeselect(this));
+                RemovePointerEnterEvent(() => _buttonHoverEffect.OnSelect(this));
+                RemovePointerExitEvent(() => _buttonHoverEffect.OnDeselect(this));
             }
         }
 
-        public County County { get => county; }
+        public County County { get => _county; }
     }
 }

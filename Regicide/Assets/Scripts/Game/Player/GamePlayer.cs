@@ -16,14 +16,14 @@ namespace Regicide.Game.Player
 
         public GamePlayerKingdom PlayerKingdom { get; private set; } = null;
 
-        [SerializeField] private Camera playerCamera = null;
-        [SerializeField] private Canvas playerCanvas = null;
+        [SerializeField] private Camera _playerCamera = null;
+        [SerializeField] private Canvas _playerCanvas = null;
 
         private void Awake()
         {
             PlayerKingdom = GetComponent<GamePlayerKingdom>();
-            playerCamera.gameObject.SetActive(false);
-            playerCanvas.gameObject.SetActive(false);
+            _playerCamera.gameObject.SetActive(false);
+            _playerCanvas.gameObject.SetActive(false);
         }
 
         public override void OnStartServer()
@@ -37,13 +37,13 @@ namespace Regicide.Game.Player
         {
             base.OnStopAuthority();
             LocalPlayer = this;
-            playerCamera.gameObject.SetActive(true);
-            playerCanvas.gameObject.SetActive(true);
+            _playerCamera.gameObject.SetActive(true);
+            _playerCanvas.gameObject.SetActive(true);
             for (int cameraIndex = 0; cameraIndex < Camera.allCamerasCount; cameraIndex++)
             {
                 Camera.allCameras[cameraIndex].enabled = false;
             }
-            playerCamera.enabled = true;
+            _playerCamera.enabled = true;
         }
 
         public override void OnStartClient()
