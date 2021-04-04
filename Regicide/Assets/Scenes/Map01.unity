@@ -410,8 +410,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  clientStateCycler: {fileID: 591929363}
-  countyAssignmentTurnCyclerPrefab: {fileID: 8650567559251045400, guid: b9060126a9f5019489da5b08c1bdea4a, type: 3}
+  _clientStateCycler: {fileID: 591929363}
+  _countyAssignmentTurnCyclerPrefab: {fileID: 8650567559251045400, guid: b9060126a9f5019489da5b08c1bdea4a, type: 3}
 --- !u!114 &672170375
 MonoBehaviour:
   m_ObjectHideFlags: 0

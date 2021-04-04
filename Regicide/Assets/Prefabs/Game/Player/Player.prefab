@@ -69,8 +69,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  playerCamera: {fileID: 181027615497185954}
-  playerCanvas: {fileID: 181027615409327560}
+  _playerCamera: {fileID: 181027615497185954}
+  _playerCanvas: {fileID: 181027615409327560}
 --- !u!114 &1364459420579066359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,12 +99,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  cinemachineCamera: {fileID: 181027615331934827}
-  playerRigidbody: {fileID: 6652329288471674341}
-  cameraCollider: {fileID: 3720230806690471782}
-  movementSpeed: 500
-  zoomIncrement: 1
-  zoomSpeed: 10
+  _cinemachineCamera: {fileID: 181027615331934827}
+  _playerRigidbody: {fileID: 6652329288471674341}
+  _cameraCollider: {fileID: 3720230806690471782}
+  _movementSpeed: 650
+  _zoomIncrement: 1
+  _zoomSpeed: 5
+  _minOrthographicSize: 3
+  _maxOrthographicSize: 10
 --- !u!50 &6652329288471674341
 Rigidbody2D:
   serializedVersion: 4
