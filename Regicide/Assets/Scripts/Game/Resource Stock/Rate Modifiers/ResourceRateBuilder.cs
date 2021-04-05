@@ -10,12 +10,6 @@ namespace Regicide.Game.GameResources
         private string _source = "";
         private int _expirationDays = -1;
 
-        public ResourceRateBuilder WithResource(ResourceItem resource)
-        {
-            _resource = resource;
-            return this;
-        }
-
         public ResourceRateBuilder WithRate(float rate)
         {
             _rate = rate;
@@ -62,6 +56,11 @@ namespace Regicide.Game.GameResources
         public static implicit operator ResourceRateModifier(ResourceRateBuilder builder)
         {
             return builder.Build();
+        }
+
+        public ResourceRateBuilder(ResourceItem resource)
+        {
+            _resource = resource;
         }
     }
 }

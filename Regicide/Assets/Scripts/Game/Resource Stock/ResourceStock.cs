@@ -8,6 +8,7 @@ namespace Regicide.Game.GameResources
     {
         protected Dictionary<uint, ResourceItem> _resources = new Dictionary<uint, ResourceItem>();
         protected List<ResourceRateModifier> _resourceRates = new List<ResourceRateModifier>();
+        private Dictionary<uint, ResourceStock> _resourceStocks = new Dictionary<uint, ResourceStock>();
 
         public ResourceItem this[uint key]
         {
@@ -22,6 +23,8 @@ namespace Regicide.Game.GameResources
         }
 
         public IReadOnlyList<IResourceRate> ResourceRates { get => _resourceRates; }
+
+        public IReadOnlyDictionary<uint, ResourceStock> ResourceStocks { get => _resourceStocks; }
 
         public virtual void RegisterResource(ResourceItem resource) => _resources.Add(resource.Model.ResourceId, resource);
         public virtual void UnregisterResource(ResourceItem resource) => _resources.Remove(resource.Model.ResourceId);
@@ -52,23 +55,17 @@ namespace Regicide.Game.GameResources
             return resourceRates;
         }
 
-        public virtual void SetResourceRate(IResourceRate rateModifier, float rate)
+        public virtual void AddResourceRate(ResourceRateModifier resourceRate) => _resourceRates.Add(resourceRate);
+        public virtual void RemoveResourceRate(ResourceRateModifier resourceRate) => _resourceRates.Remove(resourceRate);
+
+        protected virtual void Awake()
         {
-            ResourceRateModifier resourceRate = rateModifier as ResourceRateModifier;
-            resourceRate.Rate = rate;
+            _resourceStocks.Add(netId, this);
         }
 
-        public virtual IResourceRate CreateResourceRate(ResourceRateBuilder rateBuilder)
+        protected virtual void OnDestroy()
         {
-            ResourceRateModifier rateModifier = rateBuilder;
-            if (rateModifier != null)
-            {
-                _resourceRates.Add(rateModifier);
-                return rateModifier;
-            }
-            return null;
+            _resourceStocks.Remove(netId);
         }
-
-        public virtual void RemoveResourceRate(IResourceRate rateModifier) => _resourceRates.Remove(rateModifier as ResourceRateModifier);
     }
 }
