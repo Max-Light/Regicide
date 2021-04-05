@@ -35,22 +35,41 @@ namespace Regicide.Game.GameResources
         }
 
         [Server]
-        public override void AddResourceRate(IResourceRate rateModifier)
+        public override void SetResourceRate(IResourceRate rateModifier, float rate)
         {
-            ResourceRate rate = new ResourceRate
+            base.SetResourceRate(rateModifier, rate);
+            int index = _resourceRates.IndexOf(rateModifier as ResourceRateModifier);
+            if (index > 0)
             {
-                resourceId = rateModifier.Resource.Model.ResourceId,
-                rate = rateModifier.Rate,
-                source = rateModifier.Source
-            };
-            _syncResourceRates.Add(rate);
-            base.AddResourceRate(rateModifier);
+                _syncResourceRates[index] = new ResourceRate
+                {
+                    resourceId = _syncResourceRates[index].resourceId,
+                    rate = rate,
+                    source = _syncResourceRates[index].source
+                };
+            }
+        }
+
+        [Server]
+        public override IResourceRate CreateResourceRate(ResourceRateBuilder rateBuilder)
+        {
+            IResourceRate resourceRate = base.CreateResourceRate(rateBuilder);
+            if (resourceRate != null)
+            {
+                _syncResourceRates.Add(new ResourceRate
+                {
+                    resourceId = resourceRate.Resource.Model.ResourceId,
+                    rate = resourceRate.Rate,
+                    source = resourceRate.Source
+                });
+            }
+            return resourceRate;
         }
 
         [Server]
         public override void RemoveResourceRate(IResourceRate rateModifier)
         {
-            int index = _resourceRates.IndexOf(rateModifier);
+            int index = _resourceRates.IndexOf(rateModifier as ResourceRateModifier);
             if (index > 0)
             {
                 _syncResourceRates.RemoveAt(index);
@@ -59,30 +78,14 @@ namespace Regicide.Game.GameResources
         }
 
         [Server]
-        public void SynchronizeResourceRate(IResourceRate rateModifier, float rate)
-        {
-            int index = _resourceRates.IndexOf(rateModifier);
-            if (index > 0)
-            {
-                _syncResourceRates[index] = new ResourceRate
-                {
-                    resourceId = rateModifier.Resource.Model.ResourceId,
-                    rate = rate,
-                    source = rateModifier.Source
-                };
-                rateModifier.Rate = rate;
-            }
-        }
-
-        [Server]
         public static void UpdateResourceStocks()
         {
             foreach (NetworkResourceStock stock in NetResourceStocks.Values)
             {
-                List<IResourceRate> resourceRates = stock._resourceRates;
+                List<ResourceRateModifier> resourceRates = stock._resourceRates;
                 for (int rateIndex = 0; rateIndex < resourceRates.Count; rateIndex++)
                 {
-                    IResourceRate resourceRate = resourceRates[rateIndex];
+                    ResourceRateModifier resourceRate = resourceRates[rateIndex];
                     resourceRate.UpdateResourceAmount(stock);
                     stock._syncResource[resourceRate.Resource.Model.ResourceId] = resourceRate.Resource.Amount;
                 }

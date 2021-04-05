@@ -7,7 +7,7 @@ namespace Regicide.Game.GameResources
     public class ResourceStock : NetworkBehaviour
     {
         protected Dictionary<uint, ResourceItem> _resources = new Dictionary<uint, ResourceItem>();
-        protected List<IResourceRate> _resourceRates = new List<IResourceRate>();
+        protected List<ResourceRateModifier> _resourceRates = new List<ResourceRateModifier>();
 
         public ResourceItem this[uint key]
         {
@@ -52,7 +52,23 @@ namespace Regicide.Game.GameResources
             return resourceRates;
         }
 
-        public virtual void AddResourceRate(IResourceRate rateModifier) => _resourceRates.Add(rateModifier);
-        public virtual void RemoveResourceRate(IResourceRate rateModifier) => _resourceRates.Remove(rateModifier);
+        public virtual void SetResourceRate(IResourceRate rateModifier, float rate)
+        {
+            ResourceRateModifier resourceRate = rateModifier as ResourceRateModifier;
+            resourceRate.Rate = rate;
+        }
+
+        public virtual IResourceRate CreateResourceRate(ResourceRateBuilder rateBuilder)
+        {
+            ResourceRateModifier rateModifier = rateBuilder;
+            if (rateModifier != null)
+            {
+                _resourceRates.Add(rateModifier);
+                return rateModifier;
+            }
+            return null;
+        }
+
+        public virtual void RemoveResourceRate(IResourceRate rateModifier) => _resourceRates.Remove(rateModifier as ResourceRateModifier);
     }
 }
