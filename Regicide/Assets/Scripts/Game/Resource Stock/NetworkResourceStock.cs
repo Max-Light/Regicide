@@ -61,21 +61,6 @@ namespace Regicide.Game.GameResources
             }
         }
 
-        [Server]
-        public static void UpdateResourceStocks()
-        {
-            foreach (NetworkResourceStock stock in NetResourceStocks.Values)
-            {
-                List<ResourceRateModifier> resourceRates = stock._resourceRates;
-                for (int rateIndex = 0; rateIndex < resourceRates.Count; rateIndex++)
-                {
-                    ResourceRateModifier resourceRate = resourceRates[rateIndex];
-                    resourceRate.UpdateResourceAmount(stock);
-                    stock._syncResource[resourceRate.Resource.Model.ResourceId] = resourceRate.Resource.Amount;
-                }
-            }
-        }
-
         private void OnResourceAmountChange(SyncResourceAmount.Operation op, uint resourceId, float amount)
         {
             if (isServer) { return; }
