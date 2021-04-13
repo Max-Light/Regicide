@@ -1,51 +1,60 @@
 using Mirror;
+using System;
 using System.Collections.Generic;
 
 namespace Regicide.Game.GameResources
 {
     public class NetworkResourceStock : ResourceStock
     {
-        private struct ResourceRate 
+        private struct SyncResourceRate 
         {
             public uint resourceId;
             public float rate;
             public string source;
         }
 
-        private class SyncResourceAmount : SyncDictionary<uint, float> { }
-        private SyncResourceAmount _syncResource = new SyncResourceAmount();
+        private class SyncResourceAmountStock : SyncDictionary<uint, float> { }
+        private SyncResourceAmountStock _syncResource = new SyncResourceAmountStock();
 
-        private class SyncResourceRate : SyncList<ResourceRate> { }
-        private SyncResourceRate _syncResourceRates = new SyncResourceRate();
+        private class SyncResourceRateStock : SyncList<SyncResourceRate> { }
+        private SyncResourceRateStock _syncResourceRates = new SyncResourceRateStock();
+
+        private Dictionary<ResourceItem, Action> _syncResourceChangeActions = new Dictionary<ResourceItem, Action>();
+        private Dictionary<ResourceRateModifier, Action> _syncResourceRateChangeActions = new Dictionary<ResourceRateModifier, Action>();
 
         public static Dictionary<uint, NetworkResourceStock> NetResourceStocks { get; private set; } = new Dictionary<uint, NetworkResourceStock>();
 
         [Server]
         public override void RegisterResource(ResourceItem resource)
         {
-            base.RegisterResource(resource);
             _syncResource.Add(resource.Model.ResourceId, resource.Amount);
-            resource.AddObserver(() => SynchronizeResource(resource));
+            Action syncResourceAction = () => SynchronizeResource(resource);
+            resource.AddObserver(syncResourceAction);
+            _syncResourceChangeActions.Add(resource, syncResourceAction);
+            base.RegisterResource(resource);
         }
 
         [Server]
         public override void UnregisterResource(ResourceItem resource)
         {
-            base.UnregisterResource(resource);
             _syncResource.Remove(resource.Model.ResourceId);
-            resource.RemoveObserver(() => SynchronizeResource(resource));
+            resource.RemoveObserver(_syncResourceChangeActions[resource]);
+            _syncResourceChangeActions.Remove(resource);
+            base.UnregisterResource(resource);
         }
 
         [Server]
         public override void AddResourceRate(ResourceRateModifier resourceRate)
         {
-            _syncResourceRates.Add(new ResourceRate
+            _syncResourceRates.Add(new SyncResourceRate
             {
                 resourceId = resourceRate.Resource.Model.ResourceId,
                 rate = resourceRate.Rate,
                 source = resourceRate.Source
             });
-            resourceRate.AddObserver(() => SynchronizeResourceRate(resourceRate));
+            Action syncResourceRateAction = () => SynchronizeResourceRate(resourceRate);
+            resourceRate.AddObserver(syncResourceRateAction);
+            _syncResourceRateChangeActions.Add(resourceRate, syncResourceRateAction);
             base.AddResourceRate(resourceRate);
         }
 
@@ -53,45 +62,56 @@ namespace Regicide.Game.GameResources
         public override void RemoveResourceRate(ResourceRateModifier resourceRate)
         {
             int index = _resourceRates.IndexOf(resourceRate);
-            if (index > 0)
+            if (index >= 0)
             {
                 _syncResourceRates.RemoveAt(index);
-                resourceRate.RemoveObserver(() => SynchronizeResourceRate(resourceRate));
+                resourceRate.RemoveObserver(_syncResourceRateChangeActions[resourceRate]);
+                _syncResourceRateChangeActions.Remove(resourceRate);
                 base.RemoveResourceRate(resourceRate);
             }
         }
 
-        private void OnResourceAmountChange(SyncResourceAmount.Operation op, uint resourceId, float amount)
+        private void OnResourceAmountChange(SyncResourceAmountStock.Operation op, uint resourceId, float amount)
         {
             if (isServer) { return; }
             switch (op)
             {
                 case SyncIDictionary<uint, float>.Operation.OP_ADD:
-                    ResourceItem resource = ResourceItemFactory.GetResource(resourceId);
-                    resource.Amount = amount;
-                    _resources.Add(resourceId, resource);
-                    break;
+                    {
+                        ResourceItem resource = ResourceItemFactory.GetResource(resourceId);
+                        resource.Amount = amount;
+                        _resources.Add(resourceId, resource);
+                        break;
+                    }
                 case SyncIDictionary<uint, float>.Operation.OP_REMOVE:
-                    _resources.Remove(resourceId);
-                    break;
+                    {
+                        _resources.Remove(resourceId);
+                        break;
+                    }
                 case SyncIDictionary<uint, float>.Operation.OP_SET:
-                    SynchronizeResource(resourceId, amount);
-                    break;
+                    {
+                        ResourceItem resource = _resources[resourceId];
+                        if (resource != null)
+                        {
+                            resource.Amount = amount;
+                        }
+                        break;
+                    }
             }
         }
 
-        private void OnResourceRateChange(SyncResourceRate.Operation op, int index, ResourceRate _, ResourceRate resourceRate)
+        private void OnResourceRateChange(SyncResourceRateStock.Operation op, int index, SyncResourceRate _, SyncResourceRate resourceRate)
         {
             if (isServer) { return; }
             switch (op)
             {
-                case SyncList<ResourceRate>.Operation.OP_ADD:
+                case SyncList<SyncResourceRate>.Operation.OP_ADD:
                     _resourceRates.Add(new ResourceRateModifier(_resources[resourceRate.resourceId], resourceRate.rate, resourceRate.source));
                     break;
-                case SyncList<ResourceRate>.Operation.OP_REMOVEAT:
+                case SyncList<SyncResourceRate>.Operation.OP_REMOVEAT:
                     _resourceRates.RemoveAt(index);
                     break;
-                case SyncList<ResourceRate>.Operation.OP_SET:
+                case SyncList<SyncResourceRate>.Operation.OP_SET:
                     _resourceRates[index].Rate = resourceRate.rate;
                     break;
             }
@@ -112,7 +132,7 @@ namespace Regicide.Game.GameResources
             }
             for (int rateIndex = 0; rateIndex < _syncResourceRates.Count; rateIndex++)
             {
-                ResourceRate resourceRate = _syncResourceRates[rateIndex];
+                SyncResourceRate resourceRate = _syncResourceRates[rateIndex];
                 _resourceRates.Add(new ResourceRateModifier(_resources[resourceRate.resourceId], resourceRate.rate, resourceRate.source));
             }
         }
@@ -122,15 +142,6 @@ namespace Regicide.Game.GameResources
             base.OnDestroy();
             _syncResource.Callback -= OnResourceAmountChange;
             _syncResourceRates.Callback -= OnResourceRateChange;
-        }
-
-        private void SynchronizeResource(uint resourceId, float amount)
-        {
-            ResourceItem resource = _resources[resourceId];
-            if (resource != null)
-            {
-                resource.Amount = amount;
-            }
         }
 
         [Server]
@@ -145,7 +156,7 @@ namespace Regicide.Game.GameResources
             int index = _resourceRates.IndexOf(resourceRate);
             if (index > 0)
             {
-                _syncResourceRates[index] = new ResourceRate
+                _syncResourceRates[index] = new SyncResourceRate
                 {
                     resourceId = _syncResourceRates[index].resourceId,
                     rate = resourceRate.Rate,

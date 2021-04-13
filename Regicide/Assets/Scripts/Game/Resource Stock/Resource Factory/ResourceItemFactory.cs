@@ -25,7 +25,6 @@ namespace Regicide.Game.GameResources
                     if (!_resources.ContainsKey(model.ResourceId))
                     {
                         _resources.Add(model.ResourceId, type);
-                        Debug.Log("Registered " + type);
                     }
                     else
                     {
@@ -34,7 +33,7 @@ namespace Regicide.Game.GameResources
                 }
                 else
                 {
-                    Debug.LogError(type + " does not have a serialized Resource Profile");
+                    Debug.LogError(type + " does not have a serialized Resource Model");
                 }
             }
         }
@@ -48,21 +47,6 @@ namespace Regicide.Game.GameResources
                 return Activator.CreateInstance(resourceType) as ResourceItem;
             }
             return null;
-        }
-
-        public static List<ResourceItem> GetResourcesOfType<T>() where T : IResourceType
-        {
-            List<ResourceItem> resources = new List<ResourceItem>();
-
-            var resourceItemTypes = Assembly.GetAssembly(typeof(T)).GetTypes()
-                .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(ResourceItem)));
-
-            foreach (Type type in resourceItemTypes)
-            {
-                resources.Add(Activator.CreateInstance(type) as ResourceItem);
-            }
-
-            return resources;
         }
     }
 }

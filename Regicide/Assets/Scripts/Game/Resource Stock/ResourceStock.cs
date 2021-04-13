@@ -21,7 +21,7 @@ namespace Regicide.Game.GameResources
                 return null;
             }
         }
-        public IReadOnlyList<IResourceRate> ResourceRates { get => _resourceRates; }
+        public IReadOnlyCollection<IResourceRate> ResourceRates { get => _resourceRates; }
         public static IReadOnlyCollection<ResourceStock> ResourceStocks { get => _resourceStocks; }
 
         public virtual void RegisterResource(ResourceItem resource) => _resources.Add(resource.Model.ResourceId, resource);
