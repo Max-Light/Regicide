@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 181027614813030132}
   - component: {fileID: 6474516775405043727}
   - component: {fileID: 5736562894584758014}
-  - component: {fileID: 1364459420579066359}
+  - component: {fileID: 5659078131016713022}
   - component: {fileID: 4285666875889880282}
   - component: {fileID: 6652329288471674341}
   - component: {fileID: 3720230806690471782}
@@ -71,7 +71,7 @@ MonoBehaviour:
   syncInterval: 0.1
   _playerCamera: {fileID: 181027615497185954}
   _playerCanvas: {fileID: 181027615409327560}
---- !u!114 &1364459420579066359
+--- !u!114 &5659078131016713022
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -80,7 +80,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 181027614813030135}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b30ab4d83491e434a9b29bc8686c45f7, type: 3}
+  m_Script: {fileID: 11500000, guid: 6df46b93818dcda4187eaf792b6a5c1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0

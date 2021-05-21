@@ -1,8 +1,6 @@
 using Mirror;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Regicide.Game.Units
 {
@@ -25,7 +23,7 @@ namespace Regicide.Game.Units
             base.AddTroop(troop);
             SyncTroop syncTroop = new SyncTroop
             {
-                unitId = troop.Model.UnitId,
+                unitId = troop.UnitModel.UnitId,
                 health = troop.Health
             };
             _syncTroopRoster.Add(syncTroop);
@@ -82,11 +80,13 @@ namespace Regicide.Game.Units
         public override void OnStartClient()
         {
             base.OnStartClient();
+            if (isServer) { return; }
             _syncTroopRoster.Callback += OnTroopRosterChange;
         }
 
         private void OnDestroy()
         {
+            if (isServer) { return; }
             _syncTroopRoster.Callback -= OnTroopRosterChange;
         }
 

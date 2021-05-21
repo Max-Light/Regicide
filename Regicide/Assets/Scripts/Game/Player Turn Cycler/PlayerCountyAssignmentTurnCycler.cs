@@ -118,7 +118,7 @@ namespace Regicide.Game.PlayerTurnSystem
         [Server]
         private void AssignCountyToPlayer(County county)
         {
-            ICommand entityAssignment = new AssignEntityCommand(county, CurrentPlayerTurn);
+            ICommand entityAssignment = new AssignEntityOwnershipCommand(county, CurrentPlayerTurn);
             entityAssignment.Execute();
         }
 

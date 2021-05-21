@@ -1,14 +1,12 @@
 
+using Regicide.Game.Units;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Regicide.Game.Entities
 {
-    public class UnitCompany : Entity
+    public abstract class UnitCompany : OwnableEntity
     {
-        [SerializeField] protected County county = null;
-        public County County { get => county; }
-
         public static Dictionary<uint, UnitCompany> UnitCompanies { get; private set; } = new Dictionary<uint, UnitCompany>();
 
         public override void OnStartServer()

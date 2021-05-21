@@ -5,8 +5,9 @@ namespace Regicide.Game.Entities
     public interface IOwnableEntity
     {
         GamePlayer PlayerOwner { get; } 
-        void AssignEntityToOwner(GamePlayer player);
+        void AssignEntityOwnership(GamePlayer player);
         void RemoveEntityOwnership();
         bool HasOwner();
+        bool IsFriendly(IOwnableEntity entity);
     }
 }

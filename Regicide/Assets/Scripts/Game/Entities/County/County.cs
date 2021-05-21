@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Regicide.Game.Entities
 {
-    public class County : Entity
+    public class County : OwnableEntity
     {
         [SerializeField] protected Settlement[] settlements = null;
         public Settlement[] Settlements { get => settlements; }

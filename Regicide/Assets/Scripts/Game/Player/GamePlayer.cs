@@ -13,17 +13,23 @@ namespace Regicide.Game.Player
 
         public static GamePlayer LocalPlayer { get; private set; } = null;
         public static Dictionary<uint, GamePlayer> Players { get; private set; } = new Dictionary<uint, GamePlayer>();
-
         public GamePlayerKingdom PlayerKingdom { get; private set; } = null;
 
         [SerializeField] private Camera _playerCamera = null;
         [SerializeField] private Canvas _playerCanvas = null;
 
-        private void Awake()
+        //REMOVE THIS VERSION OF OBSERVABLE AND REPLACE IT WITH IOBSERVABLE METHODS INSTEAD
+        public enum Operation { ADD, REMOVE }
+        private static Action<Operation, GamePlayer> callback = null;
+
+        public static void AddObserver(Action<Operation, GamePlayer> observer)
         {
-            PlayerKingdom = GetComponent<GamePlayerKingdom>();
-            _playerCamera.gameObject.SetActive(false);
-            _playerCanvas.gameObject.SetActive(false);
+            callback += observer;
+        }
+
+        public static void RemoveObserver(Action<Operation, GamePlayer> observer)
+        {
+            callback -= observer;
         }
 
         public override void OnStartServer()
@@ -57,6 +63,13 @@ namespace Regicide.Game.Player
             callback?.Invoke(Operation.ADD, this);
         }
 
+        private void Awake()
+        {
+            PlayerKingdom = GetComponent<GamePlayerKingdom>();
+            _playerCamera.gameObject.SetActive(false);
+            _playerCanvas.gameObject.SetActive(false);
+        }
+
         private void OnDestroy()
         {
             if (LocalPlayer == this)
@@ -65,19 +78,6 @@ namespace Regicide.Game.Player
                 Players.Remove(netIdentity.netId);
                 callback?.Invoke(Operation.REMOVE, this);
             }
-        }
-
-        public enum Operation { ADD, REMOVE }
-        private static Action<Operation, GamePlayer> callback = null;
-
-        public static void AddObserver(Action<Operation, GamePlayer> observer)
-        {
-            callback += observer;
-        }
-
-        public static void RemoveObserver(Action<Operation, GamePlayer> observer)
-        {
-            callback -= observer;
         }
     }
 }
