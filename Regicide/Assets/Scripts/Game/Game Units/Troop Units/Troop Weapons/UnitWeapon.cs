@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace Regicide.Game.Units
@@ -12,8 +11,17 @@ namespace Regicide.Game.Units
             public string Weapon { get; private set; } = "";
             public string Description { get; private set; } = "";
             public Sprite Sprite { get; private set; } = null;
+
+            public Model(uint weaponId, string weapon, string description, Sprite sprite)
+            {
+                WeaponId = weaponId;
+                Weapon = weapon;
+                Description = description;
+                Sprite = sprite;
+            }
         }
 
-        public Model WeaponModel => null;
+        public virtual Model WeaponModel => null;
+        public virtual DamageReport WeaponDamageReport => null;
     }
 }

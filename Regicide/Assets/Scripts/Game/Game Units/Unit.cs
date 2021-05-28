@@ -1,10 +1,10 @@
-using Regicide.Game.BattleSimulation;
+
 using System;
 using UnityEngine;
 
 namespace Regicide.Game.Units
 {
-    public abstract class Unit : IUnit, IObservable, IDamager, IDamageable
+    public abstract class Unit : IUnit, IObservable<Unit>, IDamageable
     {
         public class Model
         {
@@ -24,10 +24,11 @@ namespace Regicide.Game.Units
 
         private float _health = 100;
         private float _maxHealth = 100;
-        protected Action _onUnitChange = null;
+        protected Action<Unit> _onUnitChange = null;
 
         public virtual Model UnitModel => null;
         public float Health => _health;
+        public virtual bool IsActive => _health != 0;
 
         public Unit()
         {
@@ -37,20 +38,20 @@ namespace Regicide.Game.Units
         protected virtual void TakeDamage(float damage) 
         {
             _health = Mathf.Clamp(_health - damage, 0, float.MaxValue);
-            _onUnitChange?.Invoke();
+            _onUnitChange?.Invoke(this);
         }
 
-        public void AddObserver(Action action)
+        public void AddObserver(Action<Unit> action)
         {
             _onUnitChange += action;
         }
 
-        public void RemoveObserver(Action action)
+        public void RemoveObserver(Action<Unit> action)
         {
             _onUnitChange -= action;
         }
 
-        public virtual void PopulateDamageReport(DamageReport damageReport) { }
-        public virtual void ReceiveDamage(DamageReport damage) { }
+        public virtual void ReceiveDamage(float damage) { TakeDamage(damage); }
+        public void ReceiveDamage(DamageReport damageReport) { TakeDamage(damageReport.Damage); }
     }
 }

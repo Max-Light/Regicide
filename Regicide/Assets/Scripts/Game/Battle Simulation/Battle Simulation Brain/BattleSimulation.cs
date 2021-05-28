@@ -13,15 +13,15 @@ namespace Regicide.Game.BattleSimulation
 
             public BattleKey(IBattleLine thisBattleEntity, IBattleLine hitBattleEntity)
             {
-                if (thisBattleEntity.BattleID < hitBattleEntity.BattleID)
+                if (thisBattleEntity.BattleLineID < hitBattleEntity.BattleLineID)
                 {
-                    _battleEntityId_1 = thisBattleEntity.BattleID;
-                    _battleEntityId_2 = hitBattleEntity.BattleID;
+                    _battleEntityId_1 = thisBattleEntity.BattleLineID;
+                    _battleEntityId_2 = hitBattleEntity.BattleLineID;
                 }
                 else
                 {
-                    _battleEntityId_1 = hitBattleEntity.BattleID;
-                    _battleEntityId_2 = thisBattleEntity.BattleID;
+                    _battleEntityId_1 = hitBattleEntity.BattleLineID;
+                    _battleEntityId_2 = thisBattleEntity.BattleLineID;
                 }
             }
         }
@@ -44,7 +44,7 @@ namespace Regicide.Game.BattleSimulation
                 if (battleScenario != null)
                 {
                     _battles.Add(key, battleScenario);
-                    BattleSimulationUpdater.StartBattle(battleScenario);
+                    BattleSimulationUpdater?.StartBattle(battleScenario);
                 }
             }
         }
@@ -54,7 +54,7 @@ namespace Regicide.Game.BattleSimulation
             BattleKey key = new BattleKey(battleLine_1, battleLine_2);
             if (_battles.TryGetValue(key, out BattleScenario battleScenario))
             {
-                BattleSimulationUpdater.StopBattle(battleScenario);
+                BattleSimulationUpdater?.StopBattle(battleScenario);
                 _battles.Remove(key);
             }
         }

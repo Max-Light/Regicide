@@ -1,92 +1,105 @@
 using Regicide.Game.Units;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Regicide.Game.BattleSimulation
 {
     public class TroopBattleLine
     {
         private List<TroopUnit> _troopBattleLine = null;
+        private int _battleLineCapacity = 0;
         private TroopBattleLineFormation _battleLineFormation = null;
-        private TroopUnitRoster _troopUnitRoster = null;
         private BattleCollider _battleCollider = null;
 
-        public TroopUnit[] BattleLineTroops { get => _troopBattleLine.ToArray(); }
-        public TroopUnit this[int index] { get => _troopBattleLine[index]; }
-        public BattleCollider BattleCollider { get => _battleCollider; }
+        public List<TroopUnit> BattleLineTroops { get => _troopBattleLine; }
 
-        public TroopBattleLine(TroopBattleLineFormation battleLineFormation, TroopUnitRoster troopUnitRoster, BattleCollider thisBattleCollider, int battleLineCapacity)
+        public TroopBattleLine(TroopBattleLineFormation battleLineFormation, BattleCollider thisBattleCollider, int battleLineCapacity)
         {
             _troopBattleLine = new List<TroopUnit>(battleLineCapacity);
+            _battleLineCapacity = battleLineCapacity;
             _battleLineFormation = battleLineFormation;
-            _troopUnitRoster = troopUnitRoster;
             _battleCollider = thisBattleCollider;
-            for (int troopIndex = 0; troopIndex < battleLineCapacity; troopIndex++)
+            FillBattleLine();
+        }
+
+        public TroopBattleLine(TroopBattleLineFormation battleLineFormation, BattleCollider thisBattleCollider, List<TroopUnit> troops)
+        {
+            _troopBattleLine = troops;
+            _battleLineCapacity = troops.Count;
+            _battleLineFormation = battleLineFormation;
+            _battleCollider = thisBattleCollider;
+            FillBattleLine();
+        }
+
+        public void SetBattleLine(List<TroopUnit> troopUnits)
+        {
+            _troopBattleLine = troopUnits;
+            _battleLineCapacity = troopUnits.Count;
+        }
+
+        public bool IsBattlingInCollider(BattleCollider collider)
+        {
+            return _battleCollider == collider;
+        }
+
+        private void FillBattleLine()
+        {
+            IReadOnlyList<TroopUnit> troopUnits = _battleLineFormation.TroopUnitRoster.Troops;
+            for (int troopIndex = 0; troopIndex < troopUnits.Count && _troopBattleLine.Count < _battleLineCapacity; troopIndex++)
             {
-                AddTroopAt(troopIndex, troopIndex);
+                if (!_battleLineFormation.IsTroopUnitActive(troopUnits[troopIndex]))
+                {
+                    _troopBattleLine.Add(troopUnits[troopIndex]);
+                    _battleLineFormation.SetTroopUnitAsActive(troopUnits[troopIndex]);
+                    troopUnits[troopIndex].AddObserver((unit) => OnTroopUnitChange((TroopUnit)unit));
+                }
             }
         }
 
-        public TroopBattleLine(TroopBattleLineFormation battleLineFormation, TroopUnitRoster troopUnitRoster, BattleCollider thisBattleCollider, List<TroopUnit> troops)
+        private void ReplaceUnitAt(int index)
         {
-            _troopBattleLine = troops;
-            _battleLineFormation = battleLineFormation;
-            _troopUnitRoster = troopUnitRoster;
-            _battleCollider = thisBattleCollider;
+            _battleLineFormation.RemoveActiveTroopUnit(_troopBattleLine[index]);
+            _troopBattleLine[index].RemoveObserver((unit) => OnTroopUnitChange((TroopUnit)unit));
+            TroopUnit troopUnit = GetAvailavleTroopUnit();
+            if (troopUnit != null)
+            {
+                _battleLineFormation.SetTroopUnitAsActive(troopUnit);
+                troopUnit.AddObserver((unit) => OnTroopUnitChange((TroopUnit)unit));
+                _troopBattleLine[index] = troopUnit;
+            }
+            else
+            {
+                _troopBattleLine.RemoveAt(index);
+            }
+        }
+
+        private TroopUnit GetAvailavleTroopUnit()
+        {
+            IReadOnlyList<TroopUnit> troopUnits = _battleLineFormation.TroopUnitRoster.Troops;
+            if (_battleLineFormation.IsAllTroopsActive)
+            {
+                return null;
+            }
+            for (int troopUnitIndex = 0; troopUnitIndex < troopUnits.Count; troopUnitIndex++)
+            {
+                if (!_battleLineFormation.IsTroopUnitActive(troopUnits[troopUnitIndex]))
+                {
+                    return troopUnits[troopUnitIndex];
+                }
+            }
+            return null;
         }
 
         private void OnTroopUnitChange(TroopUnit troopUnit)
         {
-            if (troopUnit.Health == 0)
+            if (!troopUnit.IsActive)
             {
-                for (int troopIndex = 0; troopIndex < _troopBattleLine.Count; troopIndex++)
+                int indexOfTroopUnit = _troopBattleLine.IndexOf(troopUnit);
+                if (indexOfTroopUnit >= 0)
                 {
-                    if (troopUnit == _troopBattleLine[troopIndex])
-                    {
-                        KillTroopAt(troopIndex);
-                        break;
-                    }
+                    ReplaceUnitAt(indexOfTroopUnit);
                 }
             }
-        }
-
-        private void AddTroopAt(int index, int startingSearchIndex = 0)
-        {
-            IReadOnlyList<TroopUnit> troopUnits = _troopUnitRoster.Troops;
-
-            if (_battleLineFormation.IsAllTroopsActive)
-            {
-                if (index < _troopBattleLine.Count)
-                {
-                    _troopBattleLine.RemoveAt(index);
-                }
-            }
-            else
-            {
-                for (int troopIndex = startingSearchIndex; troopIndex < troopUnits.Count; troopIndex++)
-                {
-                    if (!_battleLineFormation.IsTroopUnitActive(troopUnits[troopIndex]))
-                    {
-                        _battleLineFormation.SetTroopUnitAsActive(troopUnits[troopIndex], () => OnTroopUnitChange(troopUnits[troopIndex]));
-                        if (index < _troopBattleLine.Count)
-                        {
-                            _troopBattleLine[index] = troopUnits[troopIndex];
-                        }
-                        else if (_troopBattleLine.Count < _troopBattleLine.Capacity)
-                        {
-                            _troopBattleLine.Add(troopUnits[troopIndex]);
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-
-        private void KillTroopAt(int index)
-        {
-            TroopUnit troopUnit = _troopBattleLine[index];
-            _battleLineFormation.RemoveActiveTroopUnit(troopUnit);
-            _troopUnitRoster.RemoveTroop(troopUnit);
-            AddTroopAt(index);
         }
     }
 }

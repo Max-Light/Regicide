@@ -46,6 +46,7 @@ namespace Regicide.Game.Units
             {
                 return Activator.CreateInstance(unitType) as Unit;
             }
+            Debug.LogWarning("Could not successfully retrieve unit");
             return null;
         }
     }

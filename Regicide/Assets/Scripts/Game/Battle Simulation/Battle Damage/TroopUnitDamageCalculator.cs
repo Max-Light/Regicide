@@ -1,8 +1,8 @@
 
 namespace Regicide.Game.BattleSimulation
 {
-    public class TroopUnitDamage : DamageReport
+    public static class TroopUnitDamageCalculator
     {
-        
+
     }
 }

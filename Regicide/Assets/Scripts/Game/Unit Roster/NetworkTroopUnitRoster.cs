@@ -13,9 +13,7 @@ namespace Regicide.Game.Units
         }
 
         private class SyncTroopRoster : SyncList<SyncTroop> { }
-        private SyncTroopRoster _syncTroopRoster = new SyncTroopRoster();
-
-        private Dictionary<TroopUnit, Action> _syncTroopUnitChangeActions = new Dictionary<TroopUnit, Action>();
+        private SyncTroopRoster _syncAvailableTroopRoster = new SyncTroopRoster();
 
         [Server]
         public override void AddTroop(TroopUnit troop)
@@ -26,21 +24,18 @@ namespace Regicide.Game.Units
                 unitId = troop.UnitModel.UnitId,
                 health = troop.Health
             };
-            _syncTroopRoster.Add(syncTroop);
-            Action syncTroopUnitAction = () => SynchronizeUnit(troop);
-            _syncTroopUnitChangeActions.Add(troop, syncTroopUnitAction);
-            troop.AddObserver(syncTroopUnitAction);
+            _syncAvailableTroopRoster.Add(syncTroop);
+            troop.AddObserver((unit) => SynchronizeUnit((TroopUnit)unit));
         }
 
         [Server]
         public override void RemoveTroop(TroopUnit troop)
         {
-            int index = _troops.IndexOf(troop);
+            int index = _availableTroops.IndexOf(troop);
             if (index >= 0)
             {
-                _syncTroopRoster.RemoveAt(index);
-                troop.RemoveObserver(_syncTroopUnitChangeActions[troop]);
-                _syncTroopUnitChangeActions.Remove(troop);
+                _syncAvailableTroopRoster.RemoveAt(index);
+                troop.RemoveObserver((unit) => SynchronizeUnit((TroopUnit)unit));
                 base.RemoveTroop(troop);
             }
         }
@@ -48,10 +43,9 @@ namespace Regicide.Game.Units
         [Server]
         public override void RemoveTroopAt(int index)
         {
-            _syncTroopRoster.RemoveAt(index);
-            TroopUnit troop = _troops[index];
-            troop.RemoveObserver(_syncTroopUnitChangeActions[troop]);
-            _syncTroopUnitChangeActions.Remove(troop);
+            _syncAvailableTroopRoster.RemoveAt(index);
+            TroopUnit troop = _availableTroops[index];
+            troop.RemoveObserver((unit) => SynchronizeUnit((TroopUnit)unit));
             base.RemoveTroopAt(index);
         }
 
@@ -81,27 +75,27 @@ namespace Regicide.Game.Units
         {
             base.OnStartClient();
             if (isServer) { return; }
-            _syncTroopRoster.Callback += OnTroopRosterChange;
+            _syncAvailableTroopRoster.Callback += OnTroopRosterChange;
         }
 
         private void OnDestroy()
         {
             if (isServer) { return; }
-            _syncTroopRoster.Callback -= OnTroopRosterChange;
+            _syncAvailableTroopRoster.Callback -= OnTroopRosterChange;
         }
 
         [Server]
         private void SynchronizeUnit(TroopUnit troopUnit)
         {
-            int index = _troops.IndexOf(troopUnit);
+            int index = _availableTroops.IndexOf(troopUnit);
             if (index > 0)
             {
                 SyncTroop syncTroop = new SyncTroop
                 {
-                    unitId = _syncTroopRoster[index].unitId,
+                    unitId = _syncAvailableTroopRoster[index].unitId,
                     health = troopUnit.Health
                 };
-                _syncTroopRoster[index] = syncTroop;
+                _syncAvailableTroopRoster[index] = syncTroop;
             }
         }
     }

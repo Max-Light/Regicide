@@ -1,31 +1,22 @@
 
-using Regicide.Game.BattleSimulation;
 
 namespace Regicide.Game.Units
 {
-    public abstract class TroopUnit : Unit
+    public abstract class TroopUnit : Unit, IDamager
     {
-        public ITroopUnitHeadArmor HeadArmor { get; private set; } = null;
-        public ITroopUnitTorsoArmor TorsoArmor { get; private set; } = null;
-        public ITroopUnitLegArmor LegArmor { get; private set; } = null;
-        public ITroopUnitWeapon PrimaryWeapon { get; private set; } = null;
-        public ITroopUnitWeapon SecondaryWeapon { get; private set; } = null;
-        public ITroopUnitWeapon TertiaryWeapon { get; private set; } = null;
+        public virtual ITroopUnitHeadArmor HeadArmor { get; private set; } = null;
+        public virtual ITroopUnitTorsoArmor TorsoArmor { get; private set; } = null;
+        public virtual ITroopUnitLegArmor LegArmor { get; private set; } = null;
+        public virtual ITroopUnitWeapon PrimaryWeapon { get; private set; } = null;
+        public virtual ITroopUnitWeapon SecondaryWeapon { get; private set; } = null;
+        public virtual ITroopUnitWeapon TertiaryWeapon { get; private set; } = null;
+        public ITroopUnitWeapon SelectedWeapon { get; private set; } = null;
 
-        public override void PopulateDamageReport(DamageReport damageReport)
+        public virtual DamageReport DamageReport => SelectedWeapon.WeaponDamageReport;
+
+        public TroopUnit()
         {
-            if (damageReport is TroopUnitDamage troopUnitDamage)
-            {
-
-            }
-        }
-
-        public override void ReceiveDamage(DamageReport damage)
-        {
-            if (damage is TroopUnitDamage troopDamage)
-            {
-
-            }
+            SelectedWeapon = PrimaryWeapon;
         }
     }
 }
