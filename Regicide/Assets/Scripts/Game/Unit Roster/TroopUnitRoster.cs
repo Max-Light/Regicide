@@ -49,7 +49,7 @@ namespace Regicide.Game.Units
 
         protected void OnTroopChange(TroopUnit troopUnit)
         {
-            if (!troopUnit.IsActive)
+            if (!troopUnit.IsAlive)
             {
                 RemoveTroop(troopUnit);
             }

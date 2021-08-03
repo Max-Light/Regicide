@@ -4,13 +4,14 @@ using System.Collections.Generic;
 
 namespace Regicide.Game.Entities
 {
-    public abstract class OwnableEntity : NetworkBehaviour, IOwnableEntity
+    public abstract class OwnableEntity : NetworkBehaviour, IEntity
     {
         [SyncVar(hook = nameof(OnEntityOwnerChange))]
         private int _playerId = -1;
 
         protected GamePlayer _playerOwner = null;
 
+        public int EntityId { get => (int)netId; }
         public GamePlayer PlayerOwner { get => _playerOwner; }
         public static Dictionary<uint, OwnableEntity> Entities { get; private set; } = new Dictionary<uint, OwnableEntity>();
 
@@ -74,7 +75,7 @@ namespace Regicide.Game.Entities
             }
         }
 
-        public bool IsFriendly(IOwnableEntity entity)
+        public bool IsFriendly(IEntity entity)
         {
             if (_playerOwner != null)
             {
@@ -84,6 +85,11 @@ namespace Regicide.Game.Entities
             {
                 return false;
             }
+        }
+
+        public bool IsEnemy(IEntity entity)
+        {
+            return !IsFriendly(entity);
         }
     }
 }

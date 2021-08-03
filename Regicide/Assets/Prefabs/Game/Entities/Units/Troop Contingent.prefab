@@ -91,7 +91,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5424452994363404244}
   - component: {fileID: 5424452994363404250}
-  - component: {fileID: 5424452994363404251}
+  - component: {fileID: 8427424139119929641}
+  - component: {fileID: 2873993839937424104}
   m_Layer: 7
   m_Name: Flank 2 Collider
   m_TagString: Untagged
@@ -126,7 +127,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 0.85, z: 1}
   m_Center: {x: 0.25, y: 0, z: 0}
---- !u!114 &5424452994363404251
+--- !u!114 &8427424139119929641
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -135,12 +136,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 5424452994363404245}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d419169274de09459f5294399e537fb, type: 3}
+  m_Script: {fileID: 11500000, guid: 2e88e33317705254daa6d3382f07151e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _colliderName: 
-  _unitLength: 5
-  _colliderPriority: 1
+  _colliderPriority: 2
+--- !u!114 &2873993839937424104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5424452994363404245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e6616205e7b1aa47a5a60bb71ff9112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _faceName: 
+  _battleLineLength: 5
 --- !u!1 &5424452994380849269
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,7 +164,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5424452994380849268}
   - component: {fileID: 5424452994380849274}
-  - component: {fileID: 5424452994380849275}
+  - component: {fileID: 8504885293573652058}
+  - component: {fileID: 2286379588691892823}
   m_Layer: 7
   m_Name: Face 2 Collider
   m_TagString: Untagged
@@ -186,7 +200,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.85, y: 0.5, z: 1}
   m_Center: {x: 0, y: -0.25, z: 0}
---- !u!114 &5424452994380849275
+--- !u!114 &8504885293573652058
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -195,12 +209,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 5424452994380849269}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d419169274de09459f5294399e537fb, type: 3}
+  m_Script: {fileID: 11500000, guid: 2e88e33317705254daa6d3382f07151e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _colliderName: 
-  _unitLength: 20
-  _colliderPriority: 0
+  _colliderPriority: 1
+--- !u!114 &2286379588691892823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5424452994380849269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e6616205e7b1aa47a5a60bb71ff9112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _faceName: 
+  _battleLineLength: 20
 --- !u!1 &5424452994731292446
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,7 +237,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5424452994731292445}
   - component: {fileID: 5424452994731292643}
-  - component: {fileID: 5424452994731292444}
+  - component: {fileID: 614162435456010847}
+  - component: {fileID: 7970745260175070387}
   m_Layer: 7
   m_Name: Flank 1 Collider
   m_TagString: Untagged
@@ -246,7 +273,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 0.85, z: 1}
   m_Center: {x: -0.25, y: 0, z: 0}
---- !u!114 &5424452994731292444
+--- !u!114 &614162435456010847
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -255,12 +282,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 5424452994731292446}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d419169274de09459f5294399e537fb, type: 3}
+  m_Script: {fileID: 11500000, guid: 2e88e33317705254daa6d3382f07151e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _colliderName: 
-  _unitLength: 5
-  _colliderPriority: 1
+  _colliderPriority: 2
+--- !u!114 &7970745260175070387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5424452994731292446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e6616205e7b1aa47a5a60bb71ff9112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _faceName: 
+  _battleLineLength: 5
 --- !u!1 &5424452994934470521
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,13 +309,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5424452994934470525}
-  - component: {fileID: 5424452994934470526}
   - component: {fileID: 4821519381214061506}
   - component: {fileID: 5424452994934470527}
   - component: {fileID: 5424452994934470520}
   - component: {fileID: 5424452994934470466}
-  - component: {fileID: 5424452994934470524}
+  - component: {fileID: 2376101245045748750}
+  - component: {fileID: 4229000729424129923}
   - component: {fileID: 5424452994934470467}
+  - component: {fileID: 5424452994934470526}
   m_Layer: 7
   m_Name: Troop Contingent
   m_TagString: Untagged
@@ -303,22 +343,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5424452994934470526
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5424452994934470521}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  m_AssetId: 
-  hasSpawned: 0
 --- !u!114 &4821519381214061506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,6 +358,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   _troopUnitContingent: {fileID: 5424452994934470520}
+  _troopAmount: 100
 --- !u!114 &5424452994934470527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -376,8 +401,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  _battleColliders: []
---- !u!114 &5424452994934470524
+  _entityColliders:
+  - {fileID: 6166888640250372566}
+  - {fileID: 8504885293573652058}
+  - {fileID: 614162435456010847}
+  - {fileID: 8427424139119929641}
+--- !u!114 &2376101245045748750
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -386,11 +415,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 5424452994934470521}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96b083d9bd8a8284ab015747247dad45, type: 3}
+  m_Script: {fileID: 11500000, guid: da57cd2f47da7b9478d5596eedf4fb10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  _entityColliderBrain: {fileID: 5424452994934470466}
+  _troopBattleFaces:
+  - {fileID: 7056162770330977443}
+  - {fileID: 2286379588691892823}
+  - {fileID: 7970745260175070387}
+  - {fileID: 2873993839937424104}
+  _troopBattleRoster: {fileID: 4229000729424129923}
+--- !u!114 &4229000729424129923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5424452994934470521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52fd9da83f40a27418f77c4524542761, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _troopUnitRoster: {fileID: 5424452994934470527}
 --- !u!54 &5424452994934470467
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -407,6 +456,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 104
   m_CollisionDetection: 0
+--- !u!114 &5424452994934470526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5424452994934470521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  m_AssetId: 
+  hasSpawned: 0
 --- !u!1 &5424452995677572272
 GameObject:
   m_ObjectHideFlags: 0
@@ -417,7 +482,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5424452995677572279}
   - component: {fileID: 5424452995677572277}
-  - component: {fileID: 5424452995677572278}
+  - component: {fileID: 6166888640250372566}
+  - component: {fileID: 7056162770330977443}
   m_Layer: 7
   m_Name: Face 1 Collider
   m_TagString: Untagged
@@ -452,7 +518,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.85, y: 0.5, z: 1}
   m_Center: {x: 0, y: 0.25, z: 0}
---- !u!114 &5424452995677572278
+--- !u!114 &6166888640250372566
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -461,9 +527,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 5424452995677572272}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d419169274de09459f5294399e537fb, type: 3}
+  m_Script: {fileID: 11500000, guid: 2e88e33317705254daa6d3382f07151e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _colliderName: 
-  _unitLength: 20
-  _colliderPriority: 2
+  _colliderPriority: 0
+--- !u!114 &7056162770330977443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5424452995677572272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e6616205e7b1aa47a5a60bb71ff9112, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _faceName: 
+  _battleLineLength: 20

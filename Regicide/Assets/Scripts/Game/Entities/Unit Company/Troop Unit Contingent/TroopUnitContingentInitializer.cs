@@ -8,6 +8,7 @@ namespace Regicide.Game.Entities
     public class TroopUnitContingentInitializer : NetworkBehaviour
     {
         [SerializeField] private TroopUnitContingent _troopUnitContingent = null;
+        [SerializeField] private int _troopAmount = 100;
 
         private void SpawnTroops()
         {
@@ -15,7 +16,7 @@ namespace Regicide.Game.Entities
             {
                 _troopUnitContingent.SetSingularUnitType(MilitiaFootmanUnit.TroopModel);
             }
-            new SpawnTroopUnitRosterCommand(_troopUnitContingent.TroopRoster, _troopUnitContingent.UnitModel.UnitId, 100).Execute();
+            new SpawnTroopUnitRosterCommand(_troopUnitContingent.TroopRoster, _troopUnitContingent.UnitModel.UnitId, _troopAmount).Execute();
         }
 
         public override void OnStartServer()

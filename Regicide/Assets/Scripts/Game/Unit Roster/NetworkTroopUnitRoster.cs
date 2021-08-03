@@ -1,12 +1,10 @@
 using Mirror;
-using System;
-using System.Collections.Generic;
 
 namespace Regicide.Game.Units
 {
     public class NetworkTroopUnitRoster : TroopUnitRoster
     {
-        private struct SyncTroop
+        public struct SyncTroop
         {
             public uint unitId;
             public float health;

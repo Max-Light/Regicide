@@ -4,10 +4,10 @@ namespace Regicide.Game.Entities
 {
     public class AssignEntityOwnershipCommand : ICommand
     {
-        private IOwnableEntity _entity = null;
+        private IEntity _entity = null;
         private GamePlayer _player = null;
 
-        public AssignEntityOwnershipCommand(IOwnableEntity entity, GamePlayer player)
+        public AssignEntityOwnershipCommand(IEntity entity, GamePlayer player)
         {
             _entity = entity;
             _player = player;

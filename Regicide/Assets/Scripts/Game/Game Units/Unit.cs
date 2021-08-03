@@ -28,7 +28,9 @@ namespace Regicide.Game.Units
 
         public virtual Model UnitModel => null;
         public float Health => _health;
-        public virtual bool IsActive => _health != 0;
+        public DamageReductionAttribute DamageReductionReport { get => DamageReductionAttribute.None; }
+
+        public virtual bool IsAlive => _health != 0;
 
         public Unit()
         {
@@ -51,7 +53,6 @@ namespace Regicide.Game.Units
             _onUnitChange -= action;
         }
 
-        public virtual void ReceiveDamage(float damage) { TakeDamage(damage); }
-        public void ReceiveDamage(DamageReport damageReport) { TakeDamage(damageReport.Damage); }
+        public void ReceiveDamage(float damage) { TakeDamage(damage); }
     }
 }
