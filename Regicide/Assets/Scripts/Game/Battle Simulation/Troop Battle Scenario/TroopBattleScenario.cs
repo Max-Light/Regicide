@@ -58,7 +58,7 @@ namespace Regicide.Game.BattleSimulation
             _troopBattleLine.RemoveObserver(() => OnDamagerBattleLineLengthChange());
         }
 
-        public override void DestroyBattle()
+        public override void EndBattle()
         {
             StopBattle();
             _troopBattleLine.RemoveCallback((op, index, battleUnit) => OnBattleLineChange(op, index, battleUnit));
@@ -165,6 +165,7 @@ namespace Regicide.Game.BattleSimulation
                         if (_battleUpdates.TryGetValue(battleUnit, out TroopUnitDamageBattleUpdate battleUpdate))
                         {
                             battleUpdate.SetDamageables();
+                            _battleUpdates.Remove(battleUnit);
                         }
                         break;
                     }

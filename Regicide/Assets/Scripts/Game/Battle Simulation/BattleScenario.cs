@@ -5,6 +5,6 @@ namespace Regicide.Game.BattleSimulation
     {
         public virtual void StartBattle() { }
         public virtual void StopBattle() { }
-        public virtual void DestroyBattle() { }
+        public virtual void EndBattle() { }
     }
 }

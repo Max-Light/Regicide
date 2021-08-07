@@ -18,7 +18,6 @@ namespace Regicide.Game.Player
         [SerializeField] private Camera _playerCamera = null;
         [SerializeField] private Canvas _playerCanvas = null;
 
-        //REMOVE THIS VERSION OF OBSERVABLE AND REPLACE IT WITH IOBSERVABLE METHODS INSTEAD
         public enum Operation { ADD, REMOVE }
         private static Action<Operation, GamePlayer> callback = null;
 

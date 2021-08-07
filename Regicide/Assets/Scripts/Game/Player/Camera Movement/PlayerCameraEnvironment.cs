@@ -3,51 +3,24 @@ using UnityEngine;
 
 namespace Regicide.Game.Player
 {
+    [RequireComponent(typeof(Collider))]
     public class PlayerCameraEnvironment : MonoBehaviour
     {
-        public static PlayerCameraEnvironment Singleton { get; private set; } = null;
+        private static Collider _cameraEnvironmentConfiner = null;
 
-        [SerializeField] private PolygonCollider2D _virtualCameraConfinerCollider = null;
-
-        public PolygonCollider2D VirtualCameraConfinerCollider { get => _virtualCameraConfinerCollider; }
-
-        private void OnValidate()
-        {
-            _virtualCameraConfinerCollider = GetComponent<PolygonCollider2D>();
-        }
+        public static Collider CameraEnvironmentConfiner { get => _cameraEnvironmentConfiner; }
 
         private void Awake()
         {
-            if (Singleton == null)
+            if (_cameraEnvironmentConfiner == null)
             {
-                Singleton = this;
-                CreateCameraColliderBounds();
-            }
-            else
-            {
-                Debug.Log("Multiple player camera environments detected! Destroying superfluous environment...");
-                Destroy(this);
+                _cameraEnvironmentConfiner = GetComponent<Collider>();
             }
         }
 
         private void OnDestroy()
         {
-            if (Singleton == this)
-            {
-                Singleton = null;
-            }
-        }
-
-        private void CreateCameraColliderBounds()
-        {
-            EdgeCollider2D cameraBounds = gameObject.AddComponent(typeof(EdgeCollider2D)) as EdgeCollider2D;
-            Vector2[] cameraBoundPoints = new Vector2[_virtualCameraConfinerCollider.points.Length + 1];
-            for (int pointIndex = 0; pointIndex < _virtualCameraConfinerCollider.points.Length; pointIndex++)
-            {
-                cameraBoundPoints[pointIndex] = _virtualCameraConfinerCollider.points[pointIndex];
-            }
-            cameraBoundPoints[cameraBoundPoints.Length - 1] = _virtualCameraConfinerCollider.points[0];
-            cameraBounds.points = cameraBoundPoints;
+            _cameraEnvironmentConfiner = null;
         }
     }
 }

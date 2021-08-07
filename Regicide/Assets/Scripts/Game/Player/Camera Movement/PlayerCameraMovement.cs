@@ -2,7 +2,6 @@
 using Cinemachine;
 using Mirror;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Regicide.Game.Player
 {
@@ -10,8 +9,8 @@ namespace Regicide.Game.Player
     {
         private PlayerCameraController _controller = null;
         [SerializeField] private CinemachineVirtualCamera _cinemachineCamera = null;
-        [SerializeField] private Rigidbody2D _playerRigidbody = null;
-        [SerializeField] private BoxCollider2D _cameraCollider = null;
+        [SerializeField] private Rigidbody _playerRigidbody = null;
+        [SerializeField] private BoxCollider _cameraCollider = null;
         [SerializeField] private float _movementSpeed = 1;
         [SerializeField] private float _zoomIncrement = 1;
         [SerializeField] private float _zoomSpeed = 1;
@@ -51,18 +50,6 @@ namespace Regicide.Game.Player
             }
         }
 
-        private void OnValidate()
-        {
-            _playerRigidbody = GetComponent<Rigidbody2D>();
-            _cameraCollider = GetComponent<BoxCollider2D>();
-        }
-
-        private void Awake()
-        {
-            _controller = new PlayerCameraController();
-            _targetOrthographicSize = _cinemachineCamera.m_Lens.OrthographicSize;
-        }
-
         private void ActivatePlayerCameraControlScheme()
         {
             _controller.Enable();
@@ -86,14 +73,7 @@ namespace Regicide.Game.Player
         private void ActivateCinemachineCamera()
         {
             _cinemachineCamera.gameObject.SetActive(true);
-            if (PlayerCameraEnvironment.Singleton != null)
-            {
-                _cinemachineCamera.GetComponent<CinemachineConfiner>().m_BoundingShape2D = PlayerCameraEnvironment.Singleton.VirtualCameraConfinerCollider;
-            }
-            else
-            {
-                Debug.LogError("Camera environment could not be found!");
-            }
+            _cinemachineCamera.GetComponent<CinemachineConfiner>().m_BoundingVolume = PlayerCameraEnvironment.CameraEnvironmentConfiner;
         }
 
         private void ActivateCameraCollider()
@@ -101,6 +81,18 @@ namespace Regicide.Game.Player
             _cameraCollider.enabled = true;
             LensSettings virtualCameraLens = _cinemachineCamera.m_Lens;
             _cameraCollider.size = new Vector2(virtualCameraLens.OrthographicSize * virtualCameraLens.Aspect * 2, virtualCameraLens.OrthographicSize * 2);
+        }
+
+        private void OnValidate()
+        {
+            _playerRigidbody = GetComponent<Rigidbody>();
+            _cameraCollider = GetComponent<BoxCollider>();
+        }
+
+        private void Awake()
+        {
+            _controller = new PlayerCameraController();
+            _targetOrthographicSize = _cinemachineCamera.m_Lens.OrthographicSize;
         }
 
         private void FixedUpdate()

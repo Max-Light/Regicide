@@ -8,6 +8,7 @@ namespace Regicide.Game.BattleSimulation
     public class TroopBattleLine : BattleLine<TroopBattleUnit>
     {
         private int _battleLineLength = 0;
+        private TroopBattleFace _troopBattleFace = null;
 
         public int BattleLineLength 
         { 
@@ -15,10 +16,13 @@ namespace Regicide.Game.BattleSimulation
             set => _battleLineLength = Mathf.Clamp(value, 0, int.MaxValue);
         }
 
-        public TroopBattleLine(int battleLineLength)
+        public TroopBattleFace TroopBattleFace { get => _troopBattleFace; }
+
+        public TroopBattleLine(int battleLineLength, TroopBattleFace troopBattleFace)
         {
             _battleLine = new List<TroopBattleUnit>(battleLineLength);
             _battleLineLength = battleLineLength;
+            _troopBattleFace = troopBattleFace;
         }
 
         public int IndexOfTroopUnit(TroopUnit troopUnit)

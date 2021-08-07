@@ -24,13 +24,25 @@ namespace Regicide.Game.EntityCollision
         protected virtual void OnCollisionEnter(Collision collision)
         {
             ContactPoint contact = collision.GetContact(0);
-            if (collision.rigidbody.TryGetComponent(out EntityColliderBrain hitEntity) && contact.thisCollider.TryGetComponent(out EntityCollider thisEntityCollider) && contact.otherCollider.TryGetComponent(out EntityCollider hitEntityCollider))
+            if (collision.rigidbody != null 
+                && collision.rigidbody.TryGetComponent(out EntityColliderBrain hitEntity) 
+                && contact.thisCollider.TryGetComponent(out EntityCollider thisEntityCollider) 
+                && contact.otherCollider.TryGetComponent(out EntityCollider hitEntityCollider))
             {
                 OnEntityCollisionEnter(hitEntity, thisEntityCollider, hitEntityCollider);
             }
         }
 
-        protected void OnEntityCollisionEnter(EntityColliderBrain hitBattleEntity, EntityCollider thisBattleCollider, EntityCollider hitBattleCollider)
+        protected virtual void OnCollisionExit(Collision collision)
+        {
+            if (collision.rigidbody != null 
+                && collision.rigidbody.TryGetComponent(out EntityColliderBrain hitBattleEntity))
+            {
+                TriggerEntityCollisionExit(hitBattleEntity);
+            }
+        }
+
+        private void OnEntityCollisionEnter(EntityColliderBrain hitBattleEntity, EntityCollider thisBattleCollider, EntityCollider hitBattleCollider)
         {
             if (!_collidedEntities.ContainsKey(hitBattleEntity))
             {
@@ -46,22 +58,6 @@ namespace Regicide.Game.EntityCollision
             }
         }
 
-        protected virtual void OnCollisionExit(Collision collision)
-        {
-            if (collision.rigidbody.TryGetComponent(out EntityColliderBrain hitBattleEntity))
-            {
-                TriggerEntityCollisionExit(hitBattleEntity);
-            }
-        }
-
-        protected void TriggerEntityCollisionExit(EntityColliderBrain hitEntity)
-        {
-            foreach (IEntityCollisionObserver colliderObserver in _entityCollisionObservers)
-            {
-                colliderObserver.OnEntityCollisionExit(this, hitEntity);
-            }
-        }
-
         private IEnumerator TriggerEntityCollisionEnter(EntityColliderBrain hitEntity)
         {
             yield return new WaitForFixedUpdate();
@@ -70,6 +66,14 @@ namespace Regicide.Game.EntityCollision
                 colliderObserver.OnEntityCollisionEnter(this, hitEntity, _collidedEntities[hitEntity]);
             }
             _collidedEntities.Remove(hitEntity);
+        }
+
+        private void TriggerEntityCollisionExit(EntityColliderBrain hitEntity)
+        {
+            foreach (IEntityCollisionObserver colliderObserver in _entityCollisionObservers)
+            {
+                colliderObserver.OnEntityCollisionExit(this, hitEntity);
+            }
         }
 
         private void Awake()

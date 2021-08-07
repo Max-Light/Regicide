@@ -28,7 +28,7 @@ namespace Regicide.Game.BattleSimulation
                 _battleLines[battleLineIndex].BattleLineLength = newBattleLineLength;
                 troopBattleUnits.AddRange(GetExcessTroopBattleUnits(_battleLines[battleLineIndex]));
             }
-            TroopBattleLine troopBattleLine = new TroopBattleLine(_battleLineLength - (int)accumulatedPartition);
+            TroopBattleLine troopBattleLine = new TroopBattleLine(_battleLineLength - (int)accumulatedPartition, this);
             troopBattleLine.AddRange(troopBattleUnits);
             _battleLines.Add(troopBattleLine);
             return troopBattleLine;
