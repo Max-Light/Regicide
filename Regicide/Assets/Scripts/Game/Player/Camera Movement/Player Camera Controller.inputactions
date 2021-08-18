@@ -20,6 +20,14 @@
                     "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Camera Drag Move",
+                    "type": "PassThrough",
+                    "id": "d36ebfbc-d6e5-4737-b7d7-996d1094a5fa",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -86,6 +94,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Camera Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6eb756a1-7531-407f-a77b-7bb7d14670eb",
+                    "path": "<Pointer>/press",
+                    "interactions": "Hold(duration=0.075)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Camera Drag Move",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

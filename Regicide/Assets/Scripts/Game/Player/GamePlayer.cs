@@ -8,15 +8,16 @@ namespace Regicide.Game.Player
 {
     public class GamePlayer : NetworkBehaviour
     {
+        private static GamePlayer _localGamePlayer = null;
+        [SerializeField] private Camera _playerCamera = null;
+        [SerializeField] private Canvas _playerCanvas = null;
+
         public string PlayerName { get; private set; } = "Player";
         public ulong SteamID { get; private set; } = 0;
 
-        public static GamePlayer LocalPlayer { get; private set; } = null;
+        public static GamePlayer LocalGamePlayer { get => _localGamePlayer; }
         public static Dictionary<uint, GamePlayer> Players { get; private set; } = new Dictionary<uint, GamePlayer>();
         public GamePlayerKingdom PlayerKingdom { get; private set; } = null;
-
-        [SerializeField] private Camera _playerCamera = null;
-        [SerializeField] private Canvas _playerCanvas = null;
 
         public enum Operation { ADD, REMOVE }
         private static Action<Operation, GamePlayer> callback = null;
@@ -31,17 +32,9 @@ namespace Regicide.Game.Player
             callback -= observer;
         }
 
-        public override void OnStartServer()
+        public override void OnStartLocalPlayer()
         {
-            base.OnStartServer();
-            Players.Add(netIdentity.netId, this);
-            callback?.Invoke(Operation.ADD, this);
-        }
-
-        public override void OnStartAuthority()
-        {
-            base.OnStopAuthority();
-            LocalPlayer = this;
+            _localGamePlayer = this;
             _playerCamera.gameObject.SetActive(true);
             _playerCanvas.gameObject.SetActive(true);
             for (int cameraIndex = 0; cameraIndex < Camera.allCamerasCount; cameraIndex++)
@@ -53,11 +46,6 @@ namespace Regicide.Game.Player
 
         public override void OnStartClient()
         {
-            base.OnStartClient();
-            if (isServer)
-            {
-                return;
-            }
             Players.Add(netIdentity.netId, this);
             callback?.Invoke(Operation.ADD, this);
         }
@@ -71,9 +59,9 @@ namespace Regicide.Game.Player
 
         private void OnDestroy()
         {
-            if (LocalPlayer == this)
+            if (_localGamePlayer == this)
             {
-                LocalPlayer = null;
+                _localGamePlayer = null;
                 Players.Remove(netIdentity.netId);
                 callback?.Invoke(Operation.REMOVE, this);
             }

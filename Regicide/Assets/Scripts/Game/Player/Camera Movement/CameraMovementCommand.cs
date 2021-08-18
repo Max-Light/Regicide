@@ -5,20 +5,17 @@ namespace Regicide.Game.Player
 {
     public class CameraMovementCommand : ICommand
     {
-        private Rigidbody _playerRigidbody = null;
-        private Vector3 _moveDirection = Vector3.zero;
-        float _moveSpeed = 0;
+        private PlayerCameraMovement _playerCameraMovement = null;
 
-        public CameraMovementCommand(Rigidbody playerRigidbody, Vector2 moveDirection, float moveSpeed) 
+        public CameraMovementCommand(PlayerCameraMovement playerCameraMovement) 
         {
-            _playerRigidbody = playerRigidbody;
-            _moveDirection = new Vector3(moveDirection.x, 0, moveDirection.y);
-            _moveSpeed = moveSpeed * 100;
+            _playerCameraMovement = playerCameraMovement;
         }
 
         public void Execute()
         {
-            _playerRigidbody.velocity = _moveDirection * _moveSpeed * Time.fixedDeltaTime;
+            Vector3 direction = new Vector3(_playerCameraMovement.CurrentMoveDirection.x, 0, _playerCameraMovement.CurrentMoveDirection.y);
+            _playerCameraMovement.transform.Translate(direction * _playerCameraMovement.CameraMovementSpeed * Time.fixedDeltaTime, Space.World);
         }
     }
 }
