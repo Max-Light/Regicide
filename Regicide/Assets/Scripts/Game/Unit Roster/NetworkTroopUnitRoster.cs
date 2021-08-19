@@ -4,24 +4,14 @@ namespace Regicide.Game.Units
 {
     public class NetworkTroopUnitRoster : TroopUnitRoster
     {
-        public struct SyncTroop
-        {
-            public uint unitId;
-            public float health;
-        }
-
-        private class SyncTroopRoster : SyncList<SyncTroop> { }
+        private class SyncTroopRoster : SyncList<SyncTroopUnit> { }
         private SyncTroopRoster _syncAvailableTroopRoster = new SyncTroopRoster();
 
         [Server]
         public override void AddTroop(TroopUnit troop)
         {
             base.AddTroop(troop);
-            SyncTroop syncTroop = new SyncTroop
-            {
-                unitId = troop.UnitModel.UnitId,
-                health = troop.Health
-            };
+            SyncTroopUnit syncTroop = new SyncTroopUnit(troop);
             _syncAvailableTroopRoster.Add(syncTroop);
             troop.AddObserver((unit) => SynchronizeUnit((TroopUnit)unit));
         }
@@ -47,21 +37,21 @@ namespace Regicide.Game.Units
             base.RemoveTroopAt(index);
         }
 
-        private void OnTroopRosterChange(SyncTroopRoster.Operation op, int index, SyncTroop _, SyncTroop syncTroop)
+        private void OnTroopRosterChange(SyncTroopRoster.Operation op, int index, SyncTroopUnit _, SyncTroopUnit syncTroop)
         {
             switch (op)
             {
-                case SyncList<SyncTroop>.Operation.OP_ADD:
+                case SyncList<SyncTroopUnit>.Operation.OP_ADD:
                     {
 
                         break;
                     }
-                case SyncList<SyncTroop>.Operation.OP_REMOVEAT:
+                case SyncList<SyncTroopUnit>.Operation.OP_REMOVEAT:
                     {
 
                         break;
                     }
-                case SyncList<SyncTroop>.Operation.OP_SET:
+                case SyncList<SyncTroopUnit>.Operation.OP_SET:
                     {
 
                         break;
@@ -88,11 +78,7 @@ namespace Regicide.Game.Units
             int index = _availableTroops.IndexOf(troopUnit);
             if (index > 0)
             {
-                SyncTroop syncTroop = new SyncTroop
-                {
-                    unitId = _syncAvailableTroopRoster[index].unitId,
-                    health = troopUnit.Health
-                };
+                SyncTroopUnit syncTroop = new SyncTroopUnit(troopUnit);
                 _syncAvailableTroopRoster[index] = syncTroop;
             }
         }
