@@ -12,8 +12,7 @@ namespace Regicide.Game.BattleSimulation
         private TroopBattleLine _troopBattleLine = null;
         private TroopBattleRoster _troopBattleRoster = null;
         private Dictionary<TroopBattleUnit, TroopUnitDamageBattleUpdate> _battleUpdates = new Dictionary<TroopBattleUnit, TroopUnitDamageBattleUpdate>();
-        private IReadOnlyList<IBattleDamageable<TroopUnitDamage>> _damageableBattleLine = null;
-        private IObservable _damageableBattleLineObserver = null;
+        private IBattleLineDamageable<TroopUnitDamage> _damageableBattleLine = null;
 
         public TroopBattleLine TroopBattleLine => _troopBattleLine;
 
@@ -24,29 +23,28 @@ namespace Regicide.Game.BattleSimulation
             _troopBattleRoster = troopContingentBattleFormation.TroopBattleRoster;
             for (int battleUnitIndex = 0; battleUnitIndex < troopBattleLine.Count; battleUnitIndex++)
             {
-                troopBattleLine[battleUnitIndex].AddObserver((battleUnit) => OnTroopBattleUnitChange(battleUnit));
+                ((TroopBattleUnit)troopBattleLine[battleUnitIndex]).AddObserver((battleUnit) => OnTroopBattleUnitChange(battleUnit));
             }
             _troopBattleLine.AddCallback((op, index, battleUnit) => OnBattleLineChange(op, index, battleUnit));
             FillBattleLine();
         }
 
-        public void InitializeDamageableBattleLine(IReadOnlyList<IBattleDamageable<TroopUnitDamage>> damageableBattleLineUnits, IObservable observerableObject)
+        public void InitializeDamageableBattleLine(IBattleLineDamageable<TroopUnitDamage> damageableBattleLine)
         {
-            _damageableBattleLine = damageableBattleLineUnits;
-            _damageableBattleLineObserver = observerableObject;
+            _damageableBattleLine = damageableBattleLine;
         }
 
         public override void StartBattle()
         {
             Debug.Log("Starting Battle");
             FillBattleLine();
-            if (_troopBattleLine.UnitBattleLine.Count != 0 && _damageableBattleLine.Count != 0)
+            if (_troopBattleLine.UnitBattleLine.Count != 0 && _damageableBattleLine.BattleLineDamageable.Count != 0)
             {
-                StartTroopUnitDamageBattleLineUpdates(_damageableBattleLine);
-                _damageableBattleLineObserver.AddObserver(() => OnDamageableBattleLineLengthChange());
-                _troopBattleLine.AddObserver(() => OnDamagerBattleLineLengthChange());
+                StartTroopUnitDamageBattleLineUpdates(_damageableBattleLine.BattleLineDamageable);
+                _troopBattleLine.AddCallback((op, index, battleUnit) => OnBattleLineDamagerCountChange(op, index, battleUnit));
+                _damageableBattleLine.AddCallback((op, index, battleUnit) => OnBattleLineDamageableCountChange(op, index, battleUnit));
             }
-            Debug.Log(_troopBattleLine.UnitBattleLine.Count + " vs. " + _damageableBattleLine.Count);
+            Debug.Log(_troopBattleLine.UnitBattleLine.Count + " vs. " + _damageableBattleLine.BattleLineDamageable.Count);
         }
 
         public override void StopBattle()
@@ -54,8 +52,8 @@ namespace Regicide.Game.BattleSimulation
             Debug.Log("Stopping Battle");
             StopTroopUnitDamageBattleLineUpdates();
             _troopBattleLine.Clear();
-            _damageableBattleLineObserver.RemoveObserver(() => OnDamageableBattleLineLengthChange());
-            _troopBattleLine.RemoveObserver(() => OnDamagerBattleLineLengthChange());
+            _troopBattleLine.RemoveCallback((op, index, battleUnit) => OnBattleLineDamagerCountChange(op, index, battleUnit));
+            _damageableBattleLine.RemoveCallback((op, index, battleUnit) => OnBattleLineDamageableCountChange(op, index, battleUnit));
         }
 
         public override void EndBattle()
@@ -85,7 +83,8 @@ namespace Regicide.Game.BattleSimulation
             IBattleDamageable<TroopUnitDamage>[][] partitionedDamageableBattleLine = BattleLine<IBattleDamageable<TroopUnitDamage>>.PartitionBattleLine(damageables, _troopBattleLine.Count);
             for (int troopIndex = 0; troopIndex < _troopBattleLine.Count; troopIndex++)
             {
-                if (_battleUpdates.TryGetValue(_troopBattleLine[troopIndex], out TroopUnitDamageBattleUpdate battleUpdate))
+                TroopBattleUnit troopBattleUnit = (TroopBattleUnit)_troopBattleLine[troopIndex];
+                if (_battleUpdates.TryGetValue(troopBattleUnit, out TroopUnitDamageBattleUpdate battleUpdate))
                 {
                     if (damageables == null)
                     {
@@ -99,8 +98,8 @@ namespace Regicide.Game.BattleSimulation
                 else
                 {
                     battleUpdate = new TroopUnitDamageBattleUpdate(_troopContingentBattleFormation, partitionedDamageableBattleLine[troopIndex]);
-                    _battleUpdates.Add(_troopBattleLine[troopIndex], battleUpdate);
-                    battleUpdate.StartBattleUpdate(_troopBattleLine[troopIndex]);
+                    _battleUpdates.Add(troopBattleUnit, battleUpdate);
+                    battleUpdate.StartBattleUpdate(troopBattleUnit);
                 }
             }
         }
@@ -109,10 +108,11 @@ namespace Regicide.Game.BattleSimulation
         {
             for (int troopIndex = 0; troopIndex < _troopBattleLine.Count; troopIndex++)
             {
-                if (_battleUpdates.TryGetValue(_troopBattleLine[troopIndex], out TroopUnitDamageBattleUpdate battleUpdate))
+                TroopBattleUnit troopBattleUnit = (TroopBattleUnit)_troopBattleLine[troopIndex];
+                if (_battleUpdates.TryGetValue(troopBattleUnit, out TroopUnitDamageBattleUpdate battleUpdate))
                 {
                     battleUpdate.StopBattleUpdate();
-                    _battleUpdates.Remove(_troopBattleLine[troopIndex]);
+                    _battleUpdates.Remove(troopBattleUnit);
                 }
             }
         }
@@ -149,38 +149,39 @@ namespace Regicide.Game.BattleSimulation
             }
         }
 
-        private void OnBattleLineChange(BattleLine<TroopBattleUnit>.Operation op, int _, TroopBattleUnit battleUnit)
+        private void OnBattleLineChange(BattleLineOperation op, int _, IBattleUnit battleUnit)
         {
+            TroopBattleUnit troopBattleUnit = (TroopBattleUnit)battleUnit;
             switch (op) 
             {
-                case BattleLine<TroopBattleUnit>.Operation.OP_ADD:
-                case BattleLine<TroopBattleUnit>.Operation.OP_INSERT:
+                case BattleLineOperation.OP_ADD:
+                case BattleLineOperation.OP_INSERT:
                     {
-                        battleUnit.AddObserver((battleUnit) => OnTroopBattleUnitChange(battleUnit));
+                        troopBattleUnit.AddObserver((battleUnit) => OnTroopBattleUnitChange(battleUnit));
                         break;
                     }
-                case BattleLine<TroopBattleUnit>.Operation.OP_REMOVEAT:
+                case BattleLineOperation.OP_REMOVEAT:
                     {
-                        battleUnit.RemoveObserver((battleUnit) => OnTroopBattleUnitChange(battleUnit));
-                        if (_battleUpdates.TryGetValue(battleUnit, out TroopUnitDamageBattleUpdate battleUpdate))
+                        troopBattleUnit.RemoveObserver((battleUnit) => OnTroopBattleUnitChange(battleUnit));
+                        if (_battleUpdates.TryGetValue(troopBattleUnit, out TroopUnitDamageBattleUpdate battleUpdate))
                         {
                             battleUpdate.SetDamageables();
-                            _battleUpdates.Remove(battleUnit);
+                            _battleUpdates.Remove(troopBattleUnit);
                         }
                         break;
                     }
             }
         }
 
-        private void OnDamagerBattleLineLengthChange()
+        private void OnBattleLineDamagerCountChange(BattleLineOperation op, int _, IBattleUnit battleUnit)
         {
-            StartTroopUnitDamageBattleLineUpdates(_damageableBattleLine);
-            Debug.Log(_troopBattleLine.UnitBattleLine.Count + " vs. " + _damageableBattleLine.Count);
+            StartTroopUnitDamageBattleLineUpdates(_damageableBattleLine.BattleLineDamageable);
+            Debug.Log(_troopBattleLine.UnitBattleLine.Count + " vs. " + _damageableBattleLine.BattleLineDamageable.Count);
         }
 
-        private void OnDamageableBattleLineLengthChange()
+        private void OnBattleLineDamageableCountChange(BattleLineOperation op, int _, IBattleUnit battleUnit)
         {
-            StartTroopUnitDamageBattleLineUpdates(_damageableBattleLine);
+            StartTroopUnitDamageBattleLineUpdates(_damageableBattleLine.BattleLineDamageable);
         }
     }
 }

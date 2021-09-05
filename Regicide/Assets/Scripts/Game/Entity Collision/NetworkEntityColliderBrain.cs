@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Regicide.Game.EntityCollision
+namespace Regicide.Game.Entity
 {
     public class NetworkEntityColliderBrain : EntityColliderBrain
     {

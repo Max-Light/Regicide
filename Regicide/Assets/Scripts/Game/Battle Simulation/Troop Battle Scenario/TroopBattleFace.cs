@@ -1,11 +1,12 @@
 
-using Regicide.Game.EntityCollision;
+using Regicide.Game.Entity;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Regicide.Game.BattleSimulation
 {
-    [RequireComponent(typeof(EntityCollider))]
+    [RequireComponent(typeof(EntitySubcollider))]
     public class TroopBattleFace : MonoBehaviour
     {
         [SerializeField] private string _faceName = "";
@@ -57,15 +58,15 @@ namespace Regicide.Game.BattleSimulation
             List<TroopBattleUnit> troopBattleUnits = new List<TroopBattleUnit>();
             for (int battleLineIndex = 0; battleLineIndex < _battleLines.Count; battleLineIndex++)
             {
-                troopBattleUnits.AddRange(_battleLines[battleLineIndex].UnitBattleLine);
+                troopBattleUnits.AddRange((IEnumerable<TroopBattleUnit>)_battleLines[battleLineIndex].UnitBattleLine);
             }
             return troopBattleUnits;
         }
 
         private List<TroopBattleUnit> GetExcessTroopBattleUnits(TroopBattleLine troopBattleLine)
         {
-            List<TroopBattleUnit> excessTroopBattleUnits = new List<TroopBattleUnit>();
-            IReadOnlyList<TroopBattleUnit> troopBattleUnits = troopBattleLine.UnitBattleLine;
+            List<IBattleUnit> excessTroopBattleUnits = new List<IBattleUnit>();
+            IReadOnlyList<IBattleUnit> troopBattleUnits = troopBattleLine.UnitBattleLine;
             if (troopBattleUnits.Count > troopBattleLine.BattleLineLength) 
             {
                 for (int troopIndex = troopBattleLine.BattleLineLength; troopIndex < troopBattleUnits.Count; troopIndex++)
@@ -74,7 +75,7 @@ namespace Regicide.Game.BattleSimulation
                 }
                 troopBattleLine.RemoveRange(troopBattleLine.BattleLineLength, troopBattleUnits.Count - troopBattleLine.BattleLineLength);
             }
-            return excessTroopBattleUnits;
+            return (List<TroopBattleUnit>)excessTroopBattleUnits.Cast<TroopBattleUnit>();
         }
     }
 }

@@ -1,11 +1,12 @@
 
 using Regicide.Game.Units;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Regicide.Game.BattleSimulation
 {
-    public class TroopBattleLine : BattleLine<TroopBattleUnit>
+    public class TroopBattleLine : BattleLine<TroopBattleUnit>, IBattleLineDamager<TroopUnitDamage>, IBattleLineDamageable<TroopUnitDamage>
     {
         private int _battleLineLength = 0;
         private TroopBattleFace _troopBattleFace = null;
@@ -17,10 +18,12 @@ namespace Regicide.Game.BattleSimulation
         }
 
         public TroopBattleFace TroopBattleFace { get => _troopBattleFace; }
+        public IReadOnlyList<IBattleDamager<TroopUnitDamage>> BattleLineDamager => _battleLine;
+        public IReadOnlyList<IBattleDamageable<TroopUnitDamage>> BattleLineDamageable => _battleLine;
 
         public TroopBattleLine(int battleLineLength, TroopBattleFace troopBattleFace)
         {
-            _battleLine = new List<TroopBattleUnit>(battleLineLength);
+            _battleLine.Capacity = battleLineLength;
             _battleLineLength = battleLineLength;
             _troopBattleFace = troopBattleFace;
         }
@@ -29,7 +32,7 @@ namespace Regicide.Game.BattleSimulation
         {
             for (int troopIndex = 0; troopIndex < _battleLine.Count; troopIndex++)
             {
-                if (_battleLine[troopIndex].TroopUnit == troopUnit)
+                if (((TroopBattleUnit)_battleLine[troopIndex]).TroopUnit == troopUnit)
                 {
                     return troopIndex;
                 }

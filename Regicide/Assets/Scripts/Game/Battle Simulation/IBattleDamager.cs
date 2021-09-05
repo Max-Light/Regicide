@@ -8,5 +8,5 @@ namespace Regicide.Game.BattleSimulation
         IEnumerator CommenceBattleFighting(IBattleDamageable<T> damageable);
     }
 
-    public interface IBattleDamager { }
+    public interface IBattleDamager : IBattleUnit { }
 }

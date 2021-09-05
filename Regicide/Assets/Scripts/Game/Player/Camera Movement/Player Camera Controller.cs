@@ -116,7 +116,7 @@ namespace Regicide.Game.Player
                     ""name"": """",
                     ""id"": ""6eb756a1-7531-407f-a77b-7bb7d14670eb"",
                     ""path"": ""<Pointer>/press"",
-                    ""interactions"": ""Hold(duration=0.075)"",
+                    ""interactions"": ""Hold(duration=0.01)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Camera Drag Move"",

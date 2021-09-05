@@ -1,6 +1,5 @@
 
-using Regicide.Game.EntityCollision;
-using Regicide.Game.Units;
+using Regicide.Game.Entity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ namespace Regicide.Game.BattleSimulation
 {
     [RequireComponent(typeof(EntityColliderBrain))]
     [RequireComponent(typeof(TroopBattleRoster))]
-    public class TroopContingentBattleFormation : BattleObject, IEntityCollisionObserver
+    public class TroopContingentBattleFormation : BattleBehaviour, IEntityCollisionEnterObserver
     {
         private Dictionary<int, TroopBattleScenario> _troopContingentBattles = new Dictionary<int, TroopBattleScenario>();
 
@@ -21,69 +20,53 @@ namespace Regicide.Game.BattleSimulation
 
         public TroopBattleRoster TroopBattleRoster { get => _troopBattleRoster; }
 
-        public void OnEntityCollisionEnter(EntityColliderBrain thisEntity, EntityColliderBrain hitEntity, EntityCollision.EntityCollision collision)
+        public void OnEntityCollisionEnter(EntityCollision collision)
         {
-            if (thisEntity.Entity.IsEnemy(hitEntity.Entity) && _battleDamageableEntities.TryGetValue(hitEntity.EntityId, out BattleObject enemyDamageableEntity))
+            int hitEntityId = collision.HitEntityColliderBrain.Entity.EntityId;
+            if (collision.IsCollidedEntitiesEnemies() && !_troopContingentBattles.ContainsKey(hitEntityId))
             {
-                int enemyBattleId = hitEntity.EntityId;
-                if (!_troopContingentBattles.ContainsKey(enemyBattleId) 
-                    && enemyDamageableEntity.TryGetBattleLineResult(BattleId, out Func<IReadOnlyList<IBattleDamageable<TroopUnitDamage>>> battleLineResult)
-                    && collision.ThisBattleCollider.TryGetComponent(out TroopBattleFace battleFace) 
-                    )
+                if (!_battleDamageableEntities.TryGetValue(hitEntityId, out BattleBehaviour enemyDamageableEntity))
                 {
+                    Debug.LogError("Enemy battle behaviour could not be found");
+                    return;
+                }
+
+                if (!collision.ThisBattleCollider.TryGetComponent(out TroopBattleFace battleFace))
+                {
+                    Debug.LogError("Could not retrieve a Troop Battle Face");
+                    return;
+                }
+                else 
+                {
+                    Func<IBattleLineDamageable<TroopUnitDamage>> battleLineDamageableResult = enemyDamageableEntity.GetBattleResult<IBattleLineDamageable<TroopUnitDamage>>(BattleId);
                     TroopBattleLine battleLine = battleFace.CreateTroopBattleLine();
                     TroopBattleScenario troopBattle = new TroopBattleScenario(this, battleLine);
-                    _troopContingentBattles.Add(enemyBattleId, troopBattle);
-                    StartCoroutine(CommenceTroopContingentBattle(enemyBattleId, battleLineResult));
+                    _troopContingentBattles.Add(hitEntityId, troopBattle);
+                    StartCoroutine(CommenceTroopContingentBattle(hitEntityId, battleLineDamageableResult));
                 }
             }
         }
 
-        public void OnEntityCollisionExit(EntityColliderBrain thisEntity, EntityColliderBrain hitEntity)
+        public override Func<T> GetBattleResult<T>(int battleId)
         {
-            
-        }
-
-        public override bool TryGetBattleLineResult<T>(int battleId, out Func<IReadOnlyList<T>> battleLineResult)
-        {
-            if (TroopBattleLine.ContainsBattleUnitOfType<T>())
+            return () =>
             {
-                battleLineResult = () =>
+                if (_troopContingentBattles.TryGetValue(battleId, out TroopBattleScenario troopContingentBattle) && troopContingentBattle.TroopBattleLine is T battleLine)
                 {
-                    if (_troopContingentBattles.TryGetValue(battleId, out TroopBattleScenario troopContingentBattle))
-                    {
-                        return (IReadOnlyList<T>)troopContingentBattle.TroopBattleLine.Cast<T>();
-                    }
-                    return null;
-                };
-                return true;
-            }
-            battleLineResult = null;
-            return false;
+                    return battleLine;
+                }
+                return default(T);
+            };
         }
 
-        public override bool TryGetBattleLineObserver(int battleId, out IObservable observer)
-        {
-            if (_troopContingentBattles.TryGetValue(battleId, out TroopBattleScenario troopContingentBattle))
-            {
-                observer = troopContingentBattle.TroopBattleLine;
-                return true;
-            }
-            observer = null;
-            return false;
-        }
-
-        private IEnumerator CommenceTroopContingentBattle(int enemyBattleId, Func<IReadOnlyList<IBattleDamageable<TroopUnitDamage>>> battleLineDamageables)
+        private IEnumerator CommenceTroopContingentBattle(int enemyBattleId, Func<IBattleLineDamageable<TroopUnitDamage>> battleLineDamageablesResult)
         {
             yield return new WaitForEndOfFrame();
-            IReadOnlyList<IBattleDamageable<TroopUnitDamage>> damageables = battleLineDamageables?.Invoke();
-            if (damageables != null && _battleDamageableEntities.TryGetValue(enemyBattleId, out BattleObject battleFormation) && battleFormation.TryGetBattleLineObserver(BattleId, out IObservable observer))
+            IBattleLineDamageable<TroopUnitDamage> damageableBattleLine = battleLineDamageablesResult?.Invoke();
+            if (damageableBattleLine != null && _troopContingentBattles.TryGetValue(enemyBattleId, out TroopBattleScenario battleScenario))
             {
-                if (_troopContingentBattles.TryGetValue(enemyBattleId, out TroopBattleScenario troopUnitLineBattle))
-                {
-                    troopUnitLineBattle.InitializeDamageableBattleLine(damageables, observer);
-                    troopUnitLineBattle.StartBattle();
-                }
+                battleScenario.InitializeDamageableBattleLine(damageableBattleLine);
+                battleScenario.StartBattle();
             }
         }
 

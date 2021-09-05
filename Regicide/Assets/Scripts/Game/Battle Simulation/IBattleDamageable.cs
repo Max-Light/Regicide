@@ -6,5 +6,5 @@ namespace Regicide.Game.BattleSimulation
         bool ReceiveDamage(T damageInfliction);
     }
 
-    public interface IBattleDamageable { }
+    public interface IBattleDamageable : IBattleUnit { }
 }

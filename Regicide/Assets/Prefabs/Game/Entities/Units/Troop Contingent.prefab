@@ -91,8 +91,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5424452994363404244}
   - component: {fileID: 5424452994363404250}
-  - component: {fileID: 8427424139119929641}
   - component: {fileID: 2873993839937424104}
+  - component: {fileID: 2930762203811222065}
   m_Layer: 7
   m_Name: Flank 2 Collider
   m_TagString: Untagged
@@ -125,21 +125,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.85, z: 1}
+  m_Size: {x: 0.5, y: 1, z: 0.85}
   m_Center: {x: 0.25, y: 0, z: 0}
---- !u!114 &8427424139119929641
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5424452994363404245}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e88e33317705254daa6d3382f07151e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _colliderPriority: 2
 --- !u!114 &2873993839937424104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,6 +141,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _faceName: 
   _battleLineLength: 5
+--- !u!114 &2930762203811222065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5424452994363404245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 813a48c6c9ca6d740a2c64ebe60d314b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _colliderPriority: 1
 --- !u!1 &5424452994380849269
 GameObject:
   m_ObjectHideFlags: 0
@@ -164,8 +164,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5424452994380849268}
   - component: {fileID: 5424452994380849274}
-  - component: {fileID: 8504885293573652058}
   - component: {fileID: 2286379588691892823}
+  - component: {fileID: 1431997240261067709}
   m_Layer: 7
   m_Name: Face 2 Collider
   m_TagString: Untagged
@@ -198,21 +198,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.85, y: 0.5, z: 1}
-  m_Center: {x: 0, y: -0.25, z: 0}
---- !u!114 &8504885293573652058
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5424452994380849269}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e88e33317705254daa6d3382f07151e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _colliderPriority: 1
+  m_Size: {x: 0.85, y: 1, z: 0.5}
+  m_Center: {x: 0, y: 0, z: -0.25}
 --- !u!114 &2286379588691892823
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -227,6 +214,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _faceName: 
   _battleLineLength: 20
+--- !u!114 &1431997240261067709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5424452994380849269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 813a48c6c9ca6d740a2c64ebe60d314b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _colliderPriority: 0
 --- !u!1 &5424452994731292446
 GameObject:
   m_ObjectHideFlags: 0
@@ -237,8 +237,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5424452994731292445}
   - component: {fileID: 5424452994731292643}
-  - component: {fileID: 614162435456010847}
   - component: {fileID: 7970745260175070387}
+  - component: {fileID: 1715801859162403102}
   m_Layer: 7
   m_Name: Flank 1 Collider
   m_TagString: Untagged
@@ -271,21 +271,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.85, z: 1}
+  m_Size: {x: 0.5, y: 1, z: 0.85}
   m_Center: {x: -0.25, y: 0, z: 0}
---- !u!114 &614162435456010847
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5424452994731292446}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e88e33317705254daa6d3382f07151e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _colliderPriority: 2
 --- !u!114 &7970745260175070387
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,6 +287,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _faceName: 
   _battleLineLength: 5
+--- !u!114 &1715801859162403102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5424452994731292446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 813a48c6c9ca6d740a2c64ebe60d314b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _colliderPriority: 1
 --- !u!1 &5424452994934470521
 GameObject:
   m_ObjectHideFlags: 0
@@ -405,10 +405,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   _entityColliders:
-  - {fileID: 6166888640250372566}
-  - {fileID: 8504885293573652058}
-  - {fileID: 614162435456010847}
-  - {fileID: 8427424139119929641}
+  - {fileID: 5286934334236075819}
+  - {fileID: 1431997240261067709}
+  - {fileID: 1715801859162403102}
+  - {fileID: 2930762203811222065}
 --- !u!114 &2376101245045748750
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -474,7 +474,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   _navMeshAgent: {fileID: 4645821756472925201}
-  _test: 0
+  _testIsMoveable: 1
   _trackableLayers:
     serializedVersion: 2
     m_Bits: 384
@@ -488,7 +488,7 @@ NavMeshAgent:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5424452994934470521}
   m_Enabled: 1
-  m_AgentTypeID: 0
+  m_AgentTypeID: -1372625422
   m_Radius: 0.5
   m_Speed: 3.5
   m_Acceleration: 8
@@ -546,8 +546,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5424452995677572279}
   - component: {fileID: 5424452995677572277}
-  - component: {fileID: 6166888640250372566}
   - component: {fileID: 7056162770330977443}
+  - component: {fileID: 5286934334236075819}
   m_Layer: 7
   m_Name: Face 1 Collider
   m_TagString: Untagged
@@ -580,21 +580,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.85, y: 0.5, z: 1}
-  m_Center: {x: 0, y: 0.25, z: 0}
---- !u!114 &6166888640250372566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5424452995677572272}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e88e33317705254daa6d3382f07151e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _colliderPriority: 0
+  m_Size: {x: 0.85, y: 1, z: 0.5}
+  m_Center: {x: 0, y: 0, z: 0.25}
 --- !u!114 &7056162770330977443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -609,3 +596,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _faceName: 
   _battleLineLength: 20
+--- !u!114 &5286934334236075819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5424452995677572272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 813a48c6c9ca6d740a2c64ebe60d314b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _colliderPriority: 0
