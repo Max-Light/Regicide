@@ -15,7 +15,7 @@ namespace Regicide.Game.BattleSimulation
         public bool RemoveAsBattleActive(TroopUnit troopUnit) => _activeTroopBattleUnits.Remove(troopUnit);
         public bool ContainsBattleActiveTroopUnit(TroopUnit troopUnit) => _activeTroopBattleUnits.Contains(troopUnit);
 
-        public bool TryGetAvilableTroopUnit(out TroopUnit troopUnit)
+        public bool TrySelectBattleActiveTroopUnit(out TroopUnit troopUnit)
         {
             if (!AllTroopsBattleActive)
             {
@@ -24,6 +24,7 @@ namespace Regicide.Game.BattleSimulation
                 {
                     if (!_activeTroopBattleUnits.Contains(troopRoster[troopIndex]))
                     {
+                        _activeTroopBattleUnits.Add(troopRoster[troopIndex]);
                         troopUnit = troopRoster[troopIndex];
                         return true;
                     }

@@ -21,7 +21,7 @@ namespace Regicide.Game.BattleSimulation
         public void SetTroopUnit(TroopUnit troopUnit)
         {
             _troopUnit = troopUnit;
-            Debug.Log("Replaced Troop");
+            Debug.Log("Setting new troop unit");
         }
 
         public IEnumerator CommenceBattleFighting(IBattleDamageable<TroopUnitDamage> damageable)
@@ -42,6 +42,10 @@ namespace Regicide.Game.BattleSimulation
                 _canParry = false;
                 yield return new WaitForSeconds(recoverTime);
                 _canParry = true;
+            }
+            else
+            {
+                Debug.LogError("Troop Battle Unit has no occupying unit");
             }
         }
 

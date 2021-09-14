@@ -1,11 +1,10 @@
-
 using System;
 
 namespace Regicide.Game.BattleSimulation
 {
-    public interface IBattleLineObserver 
+    public interface IBattleLineObserver
     {
-        void AddCallback(Action<BattleLineOperation, int, IBattleUnit> callback);
-        void RemoveCallback(Action<BattleLineOperation, int, IBattleUnit> callback);
+        void AddBattleLineLengthCallback(Action callback);
+        void RemoveBattleLineLengthCallback(Action callback);
     }
 }

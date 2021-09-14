@@ -3,8 +3,12 @@ namespace Regicide.Game.BattleSimulation
 {
     public abstract class BattleScenario
     {
-        public virtual void StartBattle() { }
-        public virtual void StopBattle() { }
-        public virtual void EndBattle() { }
+        private bool _isBattling = false;
+
+        public bool IsBattling { get => _isBattling; }
+
+        public virtual void StartBattle() { _isBattling = true; }
+        public virtual void StopBattle() { _isBattling = false; }
+        public virtual void EndBattle() { StopBattle(); }
     }
 }
