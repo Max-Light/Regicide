@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Regicide.Game.Entities
+namespace Regicide.Game.Entity
 {
     public class Settlement : OwnableEntity
     {

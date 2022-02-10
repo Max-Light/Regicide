@@ -3,7 +3,7 @@ using Regicide.Game.Units;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Regicide.Game.Entities
+namespace Regicide.Game.Entity
 {
     public abstract class UnitCompany : OwnableEntity
     {

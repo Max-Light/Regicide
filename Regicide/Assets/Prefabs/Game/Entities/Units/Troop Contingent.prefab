@@ -92,7 +92,6 @@ GameObject:
   - component: {fileID: 5424452994363404244}
   - component: {fileID: 5424452994363404250}
   - component: {fileID: 2873993839937424104}
-  - component: {fileID: 2930762203811222065}
   m_Layer: 7
   m_Name: Flank 2 Collider
   m_TagString: Untagged
@@ -141,19 +140,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _faceName: 
   _battleLineLength: 5
---- !u!114 &2930762203811222065
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5424452994363404245}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 813a48c6c9ca6d740a2c64ebe60d314b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _colliderPriority: 1
+  _battleLineSplitLengthMultiplier: 1
+  _colliderPriority: 2
 --- !u!1 &5424452994380849269
 GameObject:
   m_ObjectHideFlags: 0
@@ -165,7 +153,6 @@ GameObject:
   - component: {fileID: 5424452994380849268}
   - component: {fileID: 5424452994380849274}
   - component: {fileID: 2286379588691892823}
-  - component: {fileID: 1431997240261067709}
   m_Layer: 7
   m_Name: Face 2 Collider
   m_TagString: Untagged
@@ -214,19 +201,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _faceName: 
   _battleLineLength: 20
---- !u!114 &1431997240261067709
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5424452994380849269}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 813a48c6c9ca6d740a2c64ebe60d314b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _colliderPriority: 0
+  _battleLineSplitLengthMultiplier: 1
+  _colliderPriority: 1
 --- !u!1 &5424452994731292446
 GameObject:
   m_ObjectHideFlags: 0
@@ -238,7 +214,6 @@ GameObject:
   - component: {fileID: 5424452994731292445}
   - component: {fileID: 5424452994731292643}
   - component: {fileID: 7970745260175070387}
-  - component: {fileID: 1715801859162403102}
   m_Layer: 7
   m_Name: Flank 1 Collider
   m_TagString: Untagged
@@ -287,19 +262,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _faceName: 
   _battleLineLength: 5
---- !u!114 &1715801859162403102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5424452994731292446}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 813a48c6c9ca6d740a2c64ebe60d314b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _colliderPriority: 1
+  _battleLineSplitLengthMultiplier: 1
+  _colliderPriority: 2
 --- !u!1 &5424452994934470521
 GameObject:
   m_ObjectHideFlags: 0
@@ -317,7 +281,6 @@ GameObject:
   - component: {fileID: 4229000729424129923}
   - component: {fileID: 5424452994934470467}
   - component: {fileID: 605717243178442283}
-  - component: {fileID: 4645821756472925201}
   - component: {fileID: 5424452994934470526}
   - component: {fileID: 2321367584868261278}
   m_Layer: 7
@@ -336,7 +299,7 @@ Transform:
   m_GameObject: {fileID: 5424452994934470521}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -10.62, y: 0.56, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 5, y: 1, z: 3}
   m_Children:
   - {fileID: 5424452995677572279}
   - {fileID: 5424452994380849268}
@@ -404,11 +367,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  _entityColliders:
-  - {fileID: 5286934334236075819}
-  - {fileID: 1431997240261067709}
-  - {fileID: 1715801859162403102}
-  - {fileID: 2930762203811222065}
 --- !u!114 &2376101245045748750
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -423,12 +381,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  _entityColliderBrain: {fileID: 5424452994934470466}
-  _troopBattleFaces:
-  - {fileID: 7056162770330977443}
-  - {fileID: 2286379588691892823}
-  - {fileID: 7970745260175070387}
-  - {fileID: 2873993839937424104}
+  _entityColliderBody: {fileID: 5424452994934470466}
   _troopBattleRoster: {fileID: 4229000729424129923}
 --- !u!114 &4229000729424129923
 MonoBehaviour:
@@ -455,10 +408,10 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 1
-  m_Constraints: 80
-  m_CollisionDetection: 2
+  m_Constraints: 94
+  m_CollisionDetection: 0
 --- !u!114 &605717243178442283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -473,35 +426,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  _navMeshAgent: {fileID: 4645821756472925201}
-  _testIsMoveable: 1
-  _trackableLayers:
+  _areaMask: 13
+  _agentTypeId: -1372625422
+  _baseOffset: 0
+  _navigableLayers:
     serializedVersion: 2
-    m_Bits: 384
-  _minTrackingRange: 1
-  _refreshTrackRate: 0.5
---- !u!195 &4645821756472925201
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5424452994934470521}
-  m_Enabled: 1
-  m_AgentTypeID: -1372625422
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 1
-  m_BaseOffset: 0.5
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+    m_Bits: 256
+  _testIsMoveable: 1
+  _hasTrackAbility: 1
+  _trackRefreshRate: 0.5
+  _basePositionalSpeed: 2
+  _terminalPositionalSpeed: 5
+  _positionalAcceleration: 1
+  _positionalDeacceleration: 1
+  _isSmoothPositionalStoppingEnabled: 1
+  _stoppingBoundaryDistance: 5
+  _turningAngleTolerance: 15
+  _baseAngularSpeed: 0
+  _terminalAngularSpeed: 90
+  _angularAcceleration: 15
+  _angularDeacceleration: 35
+  _turnBoundaryDistance: 3
+  _stoppingAngle: 30
 --- !u!114 &5424452994934470526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -516,7 +462,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 0
   serverOnly: 0
-  m_AssetId: 
+  visible: 0
+  m_AssetId: 8e609ccf92eb2f646900411730d473d2
   hasSpawned: 0
 --- !u!114 &2321367584868261278
 MonoBehaviour:
@@ -533,9 +480,20 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  localPositionSensitivity: 0.01
-  localRotationSensitivity: 0.01
-  localScaleSensitivity: 0.01
+  sendInterval: 0.05
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 1
+  bufferTimeMultiplier: 3
+  bufferSizeLimit: 64
+  catchupThreshold: 6
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!1 &5424452995677572272
 GameObject:
   m_ObjectHideFlags: 0
@@ -547,7 +505,6 @@ GameObject:
   - component: {fileID: 5424452995677572279}
   - component: {fileID: 5424452995677572277}
   - component: {fileID: 7056162770330977443}
-  - component: {fileID: 5286934334236075819}
   m_Layer: 7
   m_Name: Face 1 Collider
   m_TagString: Untagged
@@ -596,16 +553,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _faceName: 
   _battleLineLength: 20
---- !u!114 &5286934334236075819
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5424452995677572272}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 813a48c6c9ca6d740a2c64ebe60d314b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _battleLineSplitLengthMultiplier: 1.67
   _colliderPriority: 0

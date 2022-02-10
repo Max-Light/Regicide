@@ -1,6 +1,6 @@
 using Regicide.Game.Player;
 
-namespace Regicide.Game.Entities 
+namespace Regicide.Game.Entity 
 { 
     public interface IEntity
     {

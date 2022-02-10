@@ -51,7 +51,7 @@ namespace Regicide.Game.Player
         public bool IsMovingCamera { get => _isMovingCamera; }
         public float TargetOrthographicSize { get => _targetOrthographicSize; }
         public float TargetCameraHeight { get => CalculateTargetCameraHeight(); }
-        public Vector2 CameraWorldUnitResolution { get => CalculateCameraWorldUnitResolution(); }
+        public Vector2 CameraWorldUnitResolution { get => CalculateCameraBaseResolutionInWorldUnit(); }
 
         private void ActivateVirtualCameraEnvironment()
         {
@@ -61,7 +61,7 @@ namespace Regicide.Game.Player
             {
                 _virtualCamera.GetComponent<CinemachineConfiner>().m_BoundingVolume = boundingCollider;
                 _boundingCollider = boundingCollider;
-                PlayerCameraEnvironment.ConfineTransform(transform, CalculateCameraWorldUnitResolution());
+                PlayerCameraEnvironment.ConfineTransform(transform, CalculateCameraBaseResolutionInWorldUnit());
                 enabled = true;
             }
             else
@@ -142,7 +142,7 @@ namespace Regicide.Game.Player
             return _minTargetCameraHeight;
         }
 
-        private Vector2 CalculateCameraWorldUnitResolution()
+        private Vector2 CalculateCameraBaseResolutionInWorldUnit()
         {
             LensSettings virtualCameraLens = _virtualCamera.m_Lens;
             if (virtualCameraLens.Orthographic)
@@ -192,7 +192,7 @@ namespace Regicide.Game.Player
         {
             UpdateCameraMovement();
             UpdateCameraZoom();
-            PlayerCameraEnvironment.ConfineTransform(transform, CalculateCameraWorldUnitResolution());
+            PlayerCameraEnvironment.ConfineTransform(transform, CalculateCameraBaseResolutionInWorldUnit());
         }
 
         private void Awake()

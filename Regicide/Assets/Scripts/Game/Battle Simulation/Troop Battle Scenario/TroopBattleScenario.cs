@@ -39,7 +39,7 @@ namespace Regicide.Game.BattleSimulation
         {
             base.StartBattle();
             _troopBattleLine.FillBattleLine(_troopBattleRoster);
-            Debug.Log("Starting Battle on " + _troopContingentBattleFormation.gameObject.name + ": " + _troopBattleLine.UnitBattleLine.Count + " vs. " + _damageableBattleLine.BattleLineDamageable.Count);
+            Debug.Log("Starting Battle on " + _troopContingentBattleFormation.gameObject.name + ": " + _troopBattleLine.UnitBattleLine.Count + " (" + _troopBattleLine.BattleLineLength + ")" + " vs. " + _damageableBattleLine.BattleLineDamageable.Count);
             if (_troopBattleLine.UnitBattleLine.Count != 0 && _damageableBattleLine.BattleLineDamageable.Count != 0)
             {
                 AssignBattleUpdates();
@@ -162,7 +162,7 @@ namespace Regicide.Game.BattleSimulation
             AssignBattleUpdates();
             if (_damageableBattleLine.BattleLineDamageable.Count == 0)
             {
-                Debug.Log(">>> Troops Remaining: " + _troopBattleRoster.GetComponent<TroopUnitRoster>().Troops.Count);
+                Debug.Log(_troopContingentBattleFormation.gameObject + " >>> Troops Remaining: " + _troopBattleRoster.GetComponent<TroopUnitRoster>().Troops.Count);
             }
         }
     }

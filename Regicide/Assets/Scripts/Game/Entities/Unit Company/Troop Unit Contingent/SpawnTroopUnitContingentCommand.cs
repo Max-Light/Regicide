@@ -2,7 +2,7 @@
 using Mirror;
 using Regicide.Game.Units;
 
-namespace Regicide.Game.Entities
+namespace Regicide.Game.Entity
 {
     public class SpawnTroopUnitContingentCommand : ICommand 
     {

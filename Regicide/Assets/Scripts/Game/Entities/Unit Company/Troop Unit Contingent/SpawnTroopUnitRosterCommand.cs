@@ -1,6 +1,6 @@
 using Regicide.Game.Units;
 
-namespace Regicide.Game.Entities
+namespace Regicide.Game.Entity
 {
     public class SpawnTroopUnitRosterCommand : ICommand
     {

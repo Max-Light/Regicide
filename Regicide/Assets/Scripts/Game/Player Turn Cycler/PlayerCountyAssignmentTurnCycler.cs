@@ -1,6 +1,6 @@
 
 using Mirror;
-using Regicide.Game.Entities;
+using Regicide.Game.Entity;
 using Regicide.Game.GameStates;
 using Regicide.Game.Player;
 using System;
