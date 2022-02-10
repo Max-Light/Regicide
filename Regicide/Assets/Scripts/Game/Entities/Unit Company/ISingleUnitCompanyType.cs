@@ -1,7 +1,7 @@
 using Regicide.Game.Units;
 using System;
 
-namespace Regicide.Game.Entities
+namespace Regicide.Game.Entity
 {
     public interface ISingleUnitCompanyType
     {

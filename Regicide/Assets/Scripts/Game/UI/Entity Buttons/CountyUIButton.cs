@@ -1,5 +1,5 @@
 
-using Regicide.Game.Entities;
+using Regicide.Game.Entity;
 using System;
 using System.Collections.Generic;
 using UI;

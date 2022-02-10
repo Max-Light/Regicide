@@ -2,7 +2,7 @@ using Mirror;
 using Regicide.Game.Player;
 using System.Collections.Generic;
 
-namespace Regicide.Game.Entities
+namespace Regicide.Game.Entity
 {
     public abstract class OwnableEntity : NetworkBehaviour, IEntity
     {

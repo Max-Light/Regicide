@@ -3,7 +3,7 @@ using Mirror;
 using Regicide.Game.Units;
 using UnityEngine;
 
-namespace Regicide.Game.Entities
+namespace Regicide.Game.Entity
 {
     public class TroopUnitContingentInitializer : NetworkBehaviour
     {

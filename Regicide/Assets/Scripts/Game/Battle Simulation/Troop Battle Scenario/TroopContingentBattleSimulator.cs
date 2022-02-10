@@ -1,35 +1,35 @@
 
-using Regicide.Game.Entity;
+using Regicide.Game.Entity.BodyCollision;
 using UnityEngine;
 
 namespace Regicide.Game.BattleSimulation
 {
-    [RequireComponent(typeof(EntityColliderBrain))]
-    public class TroopContingentBattleSimulator : BattleSimulator, IEntityCollisionEnterObserver
+    [RequireComponent(typeof(EntityColliderBody))]
+    public class TroopContingentBattleSimulator : BattleSimulator
     {
-        [SerializeField] private EntityColliderBrain _entityColliderBrain = null;
+        [SerializeField] private NetworkEntityColliderBody _entityColliderBody = null;
         [SerializeField] private TroopBattleRoster _troopBattleRoster = null;
 
         public TroopBattleRoster TroopBattleRoster { get => _troopBattleRoster; }
 
-        public void OnEntityCollisionEnter(EntityCollision collision)
+        public void OnEntityCollisionEnter(BodyCollision bodyCollision)
         {
-            int hitEntityId = collision.HitEntityColliderBrain.Entity.EntityId;
-            if (collision.IsCollidedEntitiesEnemies() && !_battleScenarios.ContainsKey(hitEntityId))
+            int hitEntityId = bodyCollision.HitEntityColliderBody.Entity.EntityId;
+            if (bodyCollision.IsEnemyCollision() && !_battleScenarios.ContainsKey(hitEntityId))
             {
-                if (!_battleSimulators.TryGetValue(hitEntityId, out BattleSimulator enemyBattleBehaviour))
+                if (!_battleSimulators.TryGetValue(hitEntityId, out BattleSimulator enemyBattleSimulator))
                 {
                     Debug.LogError("Enemy battle behaviour could not be found");
                     return;
                 }
 
-                if (!collision.ThisBattleCollider.TryGetComponent(out TroopBattleFace battleFace))
+                if (!bodyCollision.ThisCollider.TryGetComponent(out TroopBattleFace battleFace))
                 {
                     Debug.LogError("Could not retrieve a Troop Battle Face");
                     return;
                 }
 
-                if (enemyBattleBehaviour.TryGetBattleScenario(BattleId, out BattleScenario enemyBattleScenario))
+                if (enemyBattleSimulator.TryGetBattleScenario(BattleId, out BattleScenario enemyBattleScenario))
                 {
                     if (enemyBattleScenario is TroopBattleScenario enemyTroopBattleScenario && enemyTroopBattleScenario.DamageableBattleLine is TroopBattleLine troopBattleLine)
                     {
@@ -39,7 +39,7 @@ namespace Regicide.Game.BattleSimulation
                         StartCoroutine(CommenceBattleScenarioAtEndOfFrame(troopBattleScenario));
                     }
                 }
-                else if (enemyBattleBehaviour.TryGetBattlingEntity(collision.HitBattleCollider.transform, out IBattleLineDamageable<TroopUnitDamage> troopBattleLineDamageable))
+                else if (enemyBattleSimulator.TryGetBattlingEntity(bodyCollision.HitCollider.transform, out IBattleLineDamageable<TroopUnitDamage> troopBattleLineDamageable))
                 {
                     TroopBattleLine troopBattleLine = battleFace.CreateTroopBattleLine();
                     TroopBattleScenario troopBattleScenario = new TroopBattleScenario(this, troopBattleLine);
@@ -66,18 +66,18 @@ namespace Regicide.Game.BattleSimulation
 
         private void OnValidate()
         {
-            _entityColliderBrain = GetComponent<EntityColliderBrain>();
+            _entityColliderBody = GetComponent<NetworkEntityColliderBody>();
             _troopBattleRoster = GetComponent<TroopBattleRoster>();
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
-            _entityColliderBrain.AddEntityCollisionObserver(this);
+            _entityColliderBody.AddServerPrioritizedCollisionEnterObserver(OnEntityCollisionEnter);
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
-            _entityColliderBrain.RemoveEntityCollisionObserver(this);
+            _entityColliderBody.RemoveServerPrioritizedCollisionEnterObserver(OnEntityCollisionEnter);
         }
     }
 }

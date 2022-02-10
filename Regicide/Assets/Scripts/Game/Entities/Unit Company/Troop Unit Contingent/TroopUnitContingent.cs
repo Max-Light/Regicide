@@ -2,7 +2,7 @@
 using Regicide.Game.Units;
 using UnityEngine;
 
-namespace Regicide.Game.Entities
+namespace Regicide.Game.Entity
 {
     [RequireComponent(typeof(TroopUnitRoster))]
     public class TroopUnitContingent : UnitCompany, ISingleUnitCompanyType, ICountyUnitCompany, ITroopRosterUnitCompany
