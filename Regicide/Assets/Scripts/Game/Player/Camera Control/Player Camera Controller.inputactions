@@ -6,39 +6,42 @@
             "id": "b0169927-7612-423e-9624-1e775bb79504",
             "actions": [
                 {
-                    "name": "Camera Move",
-                    "type": "Button",
+                    "name": "Direct Move",
+                    "type": "Value",
                     "id": "cfa83cf1-585e-460c-a912-0dad5d4c05b3",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
-                    "name": "Camera Zoom",
+                    "name": "Zoom",
                     "type": "PassThrough",
                     "id": "f5f7d6d2-8cf0-4673-b61e-f2bd9d4995f9",
                     "expectedControlType": "Axis",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
-                    "name": "Camera Drag Move",
+                    "name": "Drag Move",
                     "type": "PassThrough",
                     "id": "d36ebfbc-d6e5-4737-b7d7-996d1094a5fa",
                     "expectedControlType": "Axis",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
                 {
                     "name": "Move Vector",
                     "id": "4bb576f4-ef4b-490a-af25-b3c8b30bd68e",
-                    "path": "2DVector",
+                    "path": "2DVector(mode=2)",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Camera Move",
+                    "action": "Direct Move",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -49,7 +52,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard + Mouse",
-                    "action": "Camera Move",
+                    "action": "Direct Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -60,7 +63,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard + Mouse",
-                    "action": "Camera Move",
+                    "action": "Direct Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -71,7 +74,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard + Mouse",
-                    "action": "Camera Move",
+                    "action": "Direct Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -82,7 +85,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard + Mouse",
-                    "action": "Camera Move",
+                    "action": "Direct Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -93,7 +96,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Camera Zoom",
+                    "action": "Zoom",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -104,7 +107,7 @@
                     "interactions": "Hold(duration=0.01)",
                     "processors": "",
                     "groups": "",
-                    "action": "Camera Drag Move",
+                    "action": "Drag Move",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

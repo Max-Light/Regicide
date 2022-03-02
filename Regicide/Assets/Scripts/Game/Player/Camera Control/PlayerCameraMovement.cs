@@ -19,10 +19,6 @@ namespace Regicide.Game.Player
         [SerializeField] [Min(0)] private float _cameraZoomIncrement = 1;
         [SerializeField] [Min(0)] private float _cameraZoomingSpeed = 1;
 
-        [Header("Orthographic Mode")]
-        [SerializeField] [Min(0)] private float _minOrthographicSize = 3;
-        [SerializeField] [Min(0)] private float _maxOrthographicSize = 10;
-
         [Header("Hoverable Camera Settings")]
         [SerializeField] private LayerMask _hoverableColliderLayers;
 
@@ -43,8 +39,6 @@ namespace Regicide.Game.Player
         public float CameraMovementSpeed { get => _cameraMovementSpeed; set => _cameraMovementSpeed = Mathf.Clamp(value, 0, float.MaxValue); }
         public float CameraZoomIncrementalSpeed { get => _cameraZoomIncrement; set => _cameraZoomIncrement = Mathf.Clamp(value, 0, float.MaxValue); }
         public float CameraZoomingSpeed { get => _cameraZoomingSpeed; set => _cameraZoomingSpeed = Mathf.Clamp(value, 0, float.MaxValue); }
-        public float MinOrthographicSize { get => _minOrthographicSize; }
-        public float MaxOrthographicSize { get => _maxOrthographicSize; }
         public Vector2 CurrentMoveDirection { get => _currentCameraMoveDirection; }
         public Vector2 DragPointerOriginPosition { get => _dragPointerOrigin; }
         public Vector2 DragCameraOriginalWorldPosition { get => _dragCameraOriginWorldPosition; }
@@ -84,49 +78,42 @@ namespace Regicide.Game.Player
             _perspectiveCameraZoomCommand = new PerspectiveCameraZoomCommand(this);
             _cameraDragMovementCommand = new CameraDragMovementCommand(this);
 
-            _controller.PlayerCameraMovement.CameraMove.performed += context =>
+            _controller.PlayerCameraMovement.DirectMove.performed += context =>
             {
-                _controller.PlayerCameraMovement.CameraDragMove.Disable();
+                _controller.PlayerCameraMovement.DragMove.Disable();
                 _currentCameraMoveDirection = context.ReadValue<Vector2>().normalized;
                 _isMovingCamera = true;
             };
-            _controller.PlayerCameraMovement.CameraMove.canceled += context =>
+            _controller.PlayerCameraMovement.DirectMove.canceled += context =>
             {
-                _controller.PlayerCameraMovement.CameraDragMove.Enable();
+                _controller.PlayerCameraMovement.DragMove.Enable();
                 _currentCameraMoveDirection = Vector2.zero;
                 _isMovingCamera = false;
             };
-            _controller.PlayerCameraMovement.CameraDragMove.performed += context =>
+            _controller.PlayerCameraMovement.DragMove.performed += context =>
             {
-                _controller.PlayerCameraMovement.CameraMove.Disable();
-                _controller.PlayerCameraMovement.CameraZoom.Disable();
+                _controller.PlayerCameraMovement.DirectMove.Disable();
+                _controller.PlayerCameraMovement.Zoom.Disable();
                 _dragPointerOrigin = Pointer.current.position.ReadValue();
                 _dragCameraOriginWorldPosition = new Vector2(transform.position.x, transform.position.z);
                 _isDraggingCamera = true;
                 _isMovingCamera = true;
             };
-            _controller.PlayerCameraMovement.CameraDragMove.canceled += context =>
+            _controller.PlayerCameraMovement.DragMove.canceled += context =>
             {
-                _controller.PlayerCameraMovement.CameraMove.Enable();
-                _controller.PlayerCameraMovement.CameraZoom.Enable();
+                _controller.PlayerCameraMovement.DirectMove.Enable();
+                _controller.PlayerCameraMovement.Zoom.Enable();
                 _dragPointerOrigin = Vector2.zero;
                 _dragCameraOriginWorldPosition = Vector2.zero;
                 _isDraggingCamera = false;
                 _isMovingCamera = false;
             };
-            _controller.PlayerCameraMovement.CameraZoom.performed += context =>
+            _controller.PlayerCameraMovement.Zoom.performed += context =>
             {
                 float scrollDelta = Mathf.Clamp(context.ReadValue<float>(), -1, 1);
                 if (scrollDelta != 0)
                 {
-                    if (_virtualCamera.m_Lens.Orthographic)
-                    {
-                        _targetOrthographicSize = Mathf.Clamp(_cameraZoomIncrement * -scrollDelta + _targetOrthographicSize, _minOrthographicSize, _maxOrthographicSize);
-                    }
-                    else
-                    {
-                        _minTargetCameraHeight = Mathf.Clamp(_cameraZoomIncrement * -scrollDelta + _minTargetCameraHeight, _boundingCollider.bounds.min.y, _boundingCollider.bounds.max.y);
-                    }
+                    _minTargetCameraHeight = Mathf.Clamp(_cameraZoomIncrement * -scrollDelta + _minTargetCameraHeight, _boundingCollider.bounds.min.y, _boundingCollider.bounds.max.y);
                 }
             };
         }
@@ -198,7 +185,6 @@ namespace Regicide.Game.Player
         private void Awake()
         {
             enabled = false;
-            _virtualCamera.m_Lens.OrthographicSize = Mathf.Clamp(_virtualCamera.m_Lens.OrthographicSize, _minOrthographicSize, _maxOrthographicSize);
             _targetOrthographicSize = _virtualCamera.m_Lens.OrthographicSize;
             _minTargetCameraHeight = transform.position.y;
         }

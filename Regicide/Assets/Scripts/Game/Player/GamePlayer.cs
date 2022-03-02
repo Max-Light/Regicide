@@ -8,15 +8,20 @@ namespace Regicide.Game.Player
 {
     public class GamePlayer : NetworkBehaviour
     {
-        private static GamePlayer _localGamePlayer = null;
-        [SerializeField] private Camera _playerCamera = null;
+        [SerializeField] private PlayerCameraMovementControl _playerCameraControl = null;
         [SerializeField] private Canvas _playerCanvas = null;
+
+        private static GamePlayer _localGamePlayer = null;
+
+        private PlayerCameraController _playerCameraController = null;
 
         public string PlayerName { get; private set; } = "Player";
         public ulong SteamID { get; private set; } = 0;
 
         public static GamePlayer LocalGamePlayer { get => _localGamePlayer; }
         public static Dictionary<uint, GamePlayer> Players { get; private set; } = new Dictionary<uint, GamePlayer>();
+
+        public PlayerCameraController PlayerCameraController { get => _playerCameraController; }
         public GamePlayerKingdom PlayerKingdom { get; private set; } = null;
 
         public enum Operation { ADD, REMOVE }
@@ -32,16 +37,20 @@ namespace Regicide.Game.Player
             callback -= observer;
         }
 
+        protected void CreatePlayerCamera()
+        {
+            _playerCameraControl = Instantiate(_playerCameraControl.gameObject, this.transform).GetComponent<PlayerCameraMovementControl>();
+        }
+
         public override void OnStartLocalPlayer()
         {
             _localGamePlayer = this;
-            _playerCamera.gameObject.SetActive(true);
             _playerCanvas.gameObject.SetActive(true);
+            _playerCameraController = new PlayerCameraController();
             for (int cameraIndex = 0; cameraIndex < Camera.allCamerasCount; cameraIndex++)
             {
                 Camera.allCameras[cameraIndex].enabled = false;
             }
-            _playerCamera.enabled = true;
         }
 
         public override void OnStartClient()
@@ -52,8 +61,8 @@ namespace Regicide.Game.Player
 
         private void Awake()
         {
+            CreatePlayerCamera();
             PlayerKingdom = GetComponent<GamePlayerKingdom>();
-            _playerCamera.gameObject.SetActive(false);
             _playerCanvas.gameObject.SetActive(false);
         }
 
