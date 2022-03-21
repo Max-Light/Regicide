@@ -1,0 +1,33 @@
+{
+    "name": "Player Entity Position Controller",
+    "maps": [
+        {
+            "name": "Player Entity Positioner",
+            "id": "cfedf4fb-08b3-47f9-a07f-8246cb45afdb",
+            "actions": [
+                {
+                    "name": "Move To Position",
+                    "type": "Button",
+                    "id": "679bd6b8-7465-4753-a19d-6b8c8ab614af",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "693337e7-c1c1-4160-89c6-20a6d1ff205b",
+                    "path": "<Pointer>/press",
+                    "interactions": "Tap",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move To Position",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
