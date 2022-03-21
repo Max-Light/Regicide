@@ -184,7 +184,7 @@ namespace Regicide.Game.Entity.Navigation
         private void Update()
         {
             Keyboard keyboard = Keyboard.current;
-            if (keyboard.spaceKey.wasPressedThisFrame && _testIsMoveable)
+            if (keyboard != null && keyboard.spaceKey.wasPressedThisFrame && _testIsMoveable)
             {
                 _playerEntityPositionController.Enable();
             }
