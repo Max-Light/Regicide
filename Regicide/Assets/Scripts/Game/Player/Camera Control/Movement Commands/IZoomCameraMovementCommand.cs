@@ -6,6 +6,6 @@ namespace Regicide.Game.Player
 {
     public interface IZoomCameraMovementCommand
     {
-        public void UpdateCameraZoom(PlayerCameraMovementControl cameraControl);
+        public void UpdateCameraZoom(PlayerCameraMovementController cameraControl);
     }
 }

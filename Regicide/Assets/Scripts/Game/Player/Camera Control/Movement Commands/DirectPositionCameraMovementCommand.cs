@@ -17,9 +17,10 @@ namespace Regicide.Game.Player
             _moveDirection = direction;
         }
 
-        public void UpdateCameraPosition(PlayerCameraMovementControl cameraControl)
+        public void UpdateCameraPosition(PlayerCameraMovementController cameraControl)
         {
-            
+            Vector2 delatDistance = _positionalSpeed * _moveDirection * Time.deltaTime;
+            cameraControl.TargetTransform.position += Quaternion.AngleAxis(cameraControl.TargetTransform.eulerAngles.y, Vector3.up) * new Vector3(delatDistance.x, 0, delatDistance.y);
         }
     }
 }

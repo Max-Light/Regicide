@@ -15,6 +15,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "Drag Move",
+                    "type": "PassThrough",
+                    "id": "d36ebfbc-d6e5-4737-b7d7-996d1094a5fa",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Zoom",
                     "type": "PassThrough",
                     "id": "f5f7d6d2-8cf0-4673-b61e-f2bd9d4995f9",
@@ -24,10 +33,10 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Drag Move",
-                    "type": "PassThrough",
-                    "id": "d36ebfbc-d6e5-4737-b7d7-996d1094a5fa",
-                    "expectedControlType": "Axis",
+                    "name": "Rotate",
+                    "type": "Button",
+                    "id": "98fccfe9-6fa1-4358-aa48-042295af36ab",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -110,6 +119,39 @@
                     "action": "Drag Move",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "Rotate Direction",
+                    "id": "e69c1253-583c-4a9c-9c07-2adbfc2ab205",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "positive",
+                    "id": "a55a4474-58dc-4798-a624-47928501a760",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard + Mouse",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "negative",
+                    "id": "1da45988-0fde-4290-b970-39a24f178255",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard + Mouse",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }

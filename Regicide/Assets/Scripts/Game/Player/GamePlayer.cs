@@ -8,7 +8,6 @@ namespace Regicide.Game.Player
 {
     public class GamePlayer : NetworkBehaviour
     {
-        [SerializeField] private PlayerCameraMovementControl _playerCameraControl = null;
         [SerializeField] private Canvas _playerCanvas = null;
 
         private static GamePlayer _localGamePlayer = null;
@@ -39,14 +38,15 @@ namespace Regicide.Game.Player
 
         protected void CreatePlayerCamera()
         {
-            _playerCameraControl = Instantiate(_playerCameraControl.gameObject, this.transform).GetComponent<PlayerCameraMovementControl>();
+            _playerCameraController = new PlayerCameraController();
+            _playerCameraController.Enable();
         }
 
         public override void OnStartLocalPlayer()
         {
             _localGamePlayer = this;
             _playerCanvas.gameObject.SetActive(true);
-            _playerCameraController = new PlayerCameraController();
+            CreatePlayerCamera();
             for (int cameraIndex = 0; cameraIndex < Camera.allCamerasCount; cameraIndex++)
             {
                 Camera.allCameras[cameraIndex].enabled = false;
@@ -61,7 +61,6 @@ namespace Regicide.Game.Player
 
         private void Awake()
         {
-            CreatePlayerCamera();
             PlayerKingdom = GetComponent<GamePlayerKingdom>();
             _playerCanvas.gameObject.SetActive(false);
         }

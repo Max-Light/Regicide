@@ -6,6 +6,6 @@ namespace Regicide.Game.Player
 {
     public interface IRotationalCameraMovementCommand 
     {
-        public void UpdateCameraRotation(PlayerCameraMovementControl cameraControl);
+        public void UpdateCameraRotation(PlayerCameraMovementController cameraControl);
     }
 }
