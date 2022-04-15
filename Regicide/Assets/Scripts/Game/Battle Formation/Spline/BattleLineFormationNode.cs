@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace Regicide.Game.BattleFormation
@@ -10,12 +9,14 @@ namespace Regicide.Game.BattleFormation
         [SerializeField] private BattleLineFormationAnchor _inAnchor;
         [SerializeField] private BattleLineFormationAnchor _outAnchor;
         private float _radius;
-        private Vector3 _positionSnapshot;
+        private Vector3 _previousPosition;
 
         public BattleLineFormationAnchor InAnchor { get => _inAnchor; set => _inAnchor = value; }
         public BattleLineFormationAnchor OutAnchor { get => _outAnchor; set => _outAnchor = value; }
         public float Radius { get => _radius; set => _radius = value; }
-        public Vector3 PositionSnapshot { get => _positionSnapshot; }
+        public Vector3 PreviousPosition { get => _previousPosition; }
+
+        public bool IsSamePosition => _previousPosition == _position;
 
         public BattleLineFormationNode() 
         { 
@@ -29,12 +30,13 @@ namespace Regicide.Game.BattleFormation
 
         public void SnapshotPosition()
         {
-            _positionSnapshot = _position;
+            _previousPosition = _position;
         }
 
-        public bool IsSamePosition()
+        public void OffsetPosition(Vector3 offset)
         {
-            return _position == _positionSnapshot;
+            _position += offset;
+            _previousPosition += offset;
         }
     }
 }
