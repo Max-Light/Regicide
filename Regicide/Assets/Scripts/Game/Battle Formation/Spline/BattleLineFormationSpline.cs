@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.U2D.Path;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,14 +25,16 @@ namespace Regicide.Game.BattleFormation
             public int EndNodeBattleLineIndex { get => battleLineIndex + nodeCount - 1; }
         }
 
-        [SerializeField] private BattleLineFormationNode[] _battleLineNodes;
-        [SerializeField] private List<BattleLineFormationNode> _splineNodes = new List<BattleLineFormationNode>();
+        [SerializeField] private BattleLineNode[] _battleLineNodes;
+        [SerializeField] private List<BattleLineSplineNode> _splineNodes = new List<BattleLineSplineNode>();
+        [SerializeField] private float _maxCurveSegmentAngle = 60f;
+        [SerializeField] private float _maxAnchorAngle = 45f;
         private List<AnchorMode> _splineAnchorModes = new List<AnchorMode>();
         private const float _anchorPartition = 1f / 3f;
 
-        public IReadOnlyList<BattleLineFormationNode> SplineNodes { get => _splineNodes; }
+        public IReadOnlyList<BattleLineSplineNode> SplineNodes { get => _splineNodes; }
         public IReadOnlyList<AnchorMode> SplineAnchorModes { get => _splineAnchorModes; }
-        public BattleLineFormationNode[] BattleLineNodes { get => _battleLineNodes; }
+        public BattleLineNode[] BattleLineNodes { get => _battleLineNodes; }
         public int CurveCount { get => _splineNodes.Count - 1; }
 
         public Vector3 GetPosition(float t)
@@ -58,8 +59,8 @@ namespace Regicide.Game.BattleFormation
             t = Mathf.Clamp01(t);
             float difference = 1f - t;
 
-            BattleLineFormationNode point0 = _splineNodes[curveIndex];
-            BattleLineFormationNode point1 = _splineNodes[curveIndex + 1];
+            BattleLineSplineNode point0 = _splineNodes[curveIndex];
+            BattleLineSplineNode point1 = _splineNodes[curveIndex + 1];
 
             return transform.TransformPoint(
                 Mathf.Pow(difference, 3) * point0.Position +
@@ -91,8 +92,8 @@ namespace Regicide.Game.BattleFormation
             t = Mathf.Clamp01(t);
             float difference = 1f - t;
 
-            BattleLineFormationNode point0 = _splineNodes[curveIndex];
-            BattleLineFormationNode point1 = _splineNodes[curveIndex + 1];
+            BattleLineSplineNode point0 = _splineNodes[curveIndex];
+            BattleLineSplineNode point1 = _splineNodes[curveIndex + 1];
 
             return transform.TransformPoint(
                 3f * Mathf.Pow(difference, 2) * (point0.OutAnchor.Position - point0.Position) +
@@ -101,33 +102,28 @@ namespace Regicide.Game.BattleFormation
                 ) - transform.position;
         }
 
-        public void AppendFormationNode(BattleLineFormationNode node)
+        public void AppendFormationNode(BattleLineNode node)
         {
-            Array.Resize(ref _battleLineNodes, _battleLineNodes.Length + 1);
-            _battleLineNodes[_battleLineNodes.Length - 1] = node;
-            BattleLineFormationNode innerNode = _battleLineNodes[_battleLineNodes.Length - 2];
-
             int curveCount = CurveCount;
+            Array.Resize(ref _battleLineNodes, _battleLineNodes.Length + 1);
+            BattleLineSplineNode endNode = _splineNodes[curveCount];
+
             Vector3 normalizedDirection = (_splineNodes[curveCount].Position - _splineNodes[curveCount - 1].Position).normalized;
-            Vector3 normalizedAnchor = (innerNode.Position - innerNode.InAnchor.Position).normalized;
-            float lengthBetweenNodes = node.Radius + innerNode.Radius;
-            Vector3 anchorOffset = _anchorPartition * lengthBetweenNodes * normalizedAnchor;
-            Vector3 displacement = lengthBetweenNodes * normalizedDirection;
+            float lengthBetweenNodes = node.Radius + endNode.Radius;
+            Vector3 displacementOffset = normalizedDirection * lengthBetweenNodes;
 
-            innerNode.OutAnchor = new BattleLineFormationAnchor();
-            innerNode.OutAnchor.Position = innerNode.Position + anchorOffset;
-            node.Position = innerNode.Position + displacement;
-            node.InAnchor = new BattleLineFormationAnchor();
-            node.InAnchor.Position = node.Position - anchorOffset;
+            node.Position = endNode.Position;
+            endNode.InAnchor.OffsetPosition(displacementOffset);
+            endNode.OffsetPosition(displacementOffset);
 
-            _splineNodes[curveCount] = node;
-            node.InAnchor.SnapshotPosition();
-            node.SnapshotPosition();
+            _battleLineNodes[_battleLineNodes.Length - 2] = node;
+            _battleLineNodes[_battleLineNodes.Length - 1] = endNode;
 
-            //calculate curve info backwards, then restrict anchors and compress battle line
+            BattleLineCurveInfo curveInfo = GetCurveInfoAt(_splineNodes[curveCount - 1], _battleLineNodes.Length - 1);
+            RestrictAnchors(curveCount - 1, curveInfo);
         }
 
-        public bool AddNodeToSpline(BattleLineFormationNode formationNode)
+        public bool AddNodeToSpline(BattleLineNode formationNode)
         {
             int curveIndex = 0;
             int splineBattleLineIndex = 0;
@@ -145,19 +141,33 @@ namespace Regicide.Game.BattleFormation
                     {
                         return false;
                     }
-                    BattleLineFormationNode startNode = _splineNodes[curveIndex];
-                    _splineNodes.Insert(midNodeIndex, formationNode);
-                    BattleLineFormationNode endNode = _splineNodes[midNodeIndex + 1];
+                    BattleLineSplineNode startNode = _splineNodes[curveIndex];
+                    BattleLineSplineNode formationSplineNode = new BattleLineSplineNode(formationNode);
+                    _battleLineNodes[nodeIndex] = formationSplineNode;
+                    _splineNodes.Insert(midNodeIndex, formationSplineNode);
+                    BattleLineSplineNode endNode = _splineNodes[midNodeIndex + 1];
 
                     _splineNodes[midNodeIndex].SnapshotPosition();
                     _splineAnchorModes.Insert(midNodeIndex, _splineAnchorModes[midNodeIndex - 1]);
 
                     BattleLineCurveInfo curveInfo;
-                    curveInfo = GetCurveInfoAt(splineBattleLineIndex, formationNode);
+                    BattleLineSplineAnchor anchor;
+
+                    curveInfo = GetCurveInfoAt(splineBattleLineIndex, formationSplineNode);
+                    anchor = new BattleLineSplineAnchor();
+                    formationSplineNode.InAnchor = anchor;
+                    anchor.Position = (startNode.Position - formationSplineNode.Position).normalized * (_anchorPartition * curveInfo.curveLength) + formationSplineNode.Position;
+                    anchor.SnapshotPosition();
+
                     RestrictAnchors(curveIndex, curveInfo);
                     CompressBattleLineCurve(curveIndex, curveInfo);
 
                     curveInfo = GetCurveInfoAt(nodeIndex, endNode);
+                    anchor = new BattleLineSplineAnchor();
+                    formationSplineNode.OutAnchor = anchor;
+                    anchor.Position = (endNode.Position - formationSplineNode.Position).normalized * (_anchorPartition * curveInfo.curveLength) + formationSplineNode.Position;
+                    anchor.SnapshotPosition();
+
                     RestrictAnchors(midNodeIndex, curveInfo);
                     CompressBattleLineCurve(midNodeIndex, curveInfo);
                     return true;
@@ -171,7 +181,7 @@ namespace Regicide.Game.BattleFormation
             return AddNodeToSpline(_battleLineNodes[battleLineIndex]);
         }
 
-        public bool RemoveNodeFromSpline(BattleLineFormationNode formationNode)
+        public bool RemoveNodeFromSpline(BattleLineSplineNode formationNode)
         {
             int curveIndex = _splineNodes.IndexOf(formationNode);
             if (curveIndex > 0 && curveIndex < CurveCount)
@@ -194,20 +204,11 @@ namespace Regicide.Game.BattleFormation
             int curveIndex;
             int curveCount = CurveCount;
 
-            BattleLineFormationNode startNode = _splineNodes[nodeIndex];
-            BattleLineFormationNode endNode = _splineNodes[nodeIndex + 1];
+            BattleLineSplineNode startNode = _splineNodes[nodeIndex];
+            BattleLineSplineNode endNode = _splineNodes[nodeIndex + 1];
             BattleLineCurveInfo curveInfo;
 
-            if (!startNode.IsSamePosition)
-            {
-                Vector3 startNodePosition = (endNode.PreviousPosition - startNode.PreviousPosition).magnitude * (startNode.Position - endNode.Position).normalized + endNode.Position;
-                Vector3 startNodePositionDifference = startNodePosition - startNode.PreviousPosition;
-                
-                transform.position = transform.TransformPoint(startNodePosition) - startNode.PreviousPosition;
-
-                startNode.Position = startNode.PreviousPosition;
-                OffsetSplineNodePointsAt(1, -startNodePositionDifference);
-            }
+            startNode.Position = (endNode.Position - startNode.PreviousPosition).magnitude * (startNode.Position - endNode.Position).normalized + endNode.Position;
 
             for (curveIndex = 0; curveIndex < curveCount - 1; curveIndex++)
             {
@@ -218,9 +219,10 @@ namespace Regicide.Game.BattleFormation
                 MaintainAnchorRotations(curveIndex);
                 RestrictAnchors(curveIndex, curveInfo);
                 CompressBattleLineCurve(curveIndex, curveInfo);
+
                 if (ReflectCurves(curveIndex))
                 {
-                    BattleLineFormationNode midNode = endNode;
+                    BattleLineSplineNode midNode = endNode;
                     curveIndex++;
                     endNode = _splineNodes[curveIndex + 1];
                     nodeIndex += curveInfo.nodeCount - 1;
@@ -252,7 +254,7 @@ namespace Regicide.Game.BattleFormation
                 }
             }
 
-            if (curveIndex < curveCount)
+            if (curveIndex == curveCount - 1)
             {
                 startNode = _splineNodes[curveIndex];
                 endNode = _splineNodes[curveIndex + 1];
@@ -266,11 +268,35 @@ namespace Regicide.Game.BattleFormation
                 endNode.InAnchor.SnapshotPosition();
                 endNode.SnapshotPosition();
             }
+
+            startNode = _splineNodes[0];
+            if (!startNode.IsSamePosition)
+            {
+                Vector3 startNodeOffset = startNode.PreviousPosition - startNode.Position;
+                _splineNodes[0].SnapshotPosition();
+
+                startNode.OffsetPosition(startNodeOffset);
+                OffsetSplineNodePointsAt(1, startNodeOffset);
+                transform.position -= startNodeOffset;
+
+                curveIndex = 0;
+                for (nodeIndex = 0; nodeIndex < _battleLineNodes.Length; nodeIndex++)
+                {
+                    if (_splineNodes[curveIndex] == _battleLineNodes[nodeIndex])
+                    {
+                        curveIndex++;
+                    }
+                    else
+                    {
+                        _battleLineNodes[nodeIndex].Position += startNodeOffset;
+                    }
+                }
+            }
         }
 
-        private BattleLineCurveInfo GetCurveInfoAt(int battleLineIndex, BattleLineFormationNode endNode)
+        private BattleLineCurveInfo GetCurveInfoAt(int battleLineIndex, BattleLineSplineNode endNode)
         {
-            BattleLineFormationNode node = _battleLineNodes[battleLineIndex];
+            BattleLineNode node = _battleLineNodes[battleLineIndex];
             int nodeCount = 0;
             float curveLength = 0;
             if (node != endNode)
@@ -294,9 +320,9 @@ namespace Regicide.Game.BattleFormation
             };
         }
 
-        private BattleLineCurveInfo GetCurveInfoAt(BattleLineFormationNode startNode, int battleLineIndex)
+        private BattleLineCurveInfo GetCurveInfoAt(BattleLineSplineNode startNode, int battleLineIndex)
         {
-            BattleLineFormationNode node = _battleLineNodes[battleLineIndex];
+            BattleLineNode node = _battleLineNodes[battleLineIndex];
             int nodeCount = 0;
             float curveLength = 0;
             if (node != startNode)
@@ -322,10 +348,10 @@ namespace Regicide.Game.BattleFormation
 
         private void MaintainAnchorRotations(int curveIndex)
         {
-            BattleLineFormationNode startNode = _splineNodes[curveIndex];
-            BattleLineFormationNode endNode = _splineNodes[curveIndex + 1];
+            BattleLineSplineNode startNode = _splineNodes[curveIndex];
+            BattleLineSplineNode endNode = _splineNodes[curveIndex + 1];
 
-            if (!endNode.IsSamePosition)
+            if (!endNode.IsSamePosition || !startNode.IsSamePosition)
             {
                 Vector3 curveDisplacementSnapshot = endNode.PreviousPosition - startNode.PreviousPosition;
                 Vector3 curveDisplacement = endNode.Position - startNode.Position;
@@ -344,8 +370,8 @@ namespace Regicide.Game.BattleFormation
 
         private void RestrictAnchors(int curveIndex, BattleLineCurveInfo curveInfo)
         {
-            BattleLineFormationNode startNode = _splineNodes[curveIndex];
-            BattleLineFormationNode endNode = _splineNodes[curveIndex + 1];
+            BattleLineSplineNode startNode = _splineNodes[curveIndex];
+            BattleLineSplineNode endNode = _splineNodes[curveIndex + 1];
             float anchorDistance = _anchorPartition * curveInfo.curveLength;
 
             Vector3 outAnchorDisplacement;
@@ -402,9 +428,13 @@ namespace Regicide.Game.BattleFormation
 
                         Quaternion outAnchorRotation = Quaternion.FromToRotation(curveDisplacement, outAnchorDisplacement);
                         Quaternion inAnchorRotation = Quaternion.FromToRotation(-curveDisplacement, inAnchorDisplacement);
+
                         break;
                     }
             }
+
+
+
             outAnchorDisplacement = outAnchorDisplacement.normalized * anchorDistance;
             inAnchorDisplacement = inAnchorDisplacement.normalized * anchorDistance;
 
@@ -414,8 +444,8 @@ namespace Regicide.Game.BattleFormation
 
         private void CompressBattleLineCurve(int curveIndex, BattleLineCurveInfo curveInfo)
         {
-            BattleLineFormationNode startNode = _splineNodes[curveIndex];
-            BattleLineFormationNode endNode = _splineNodes[curveIndex + 1];
+            BattleLineSplineNode startNode = _splineNodes[curveIndex];
+            BattleLineSplineNode endNode = _splineNodes[curveIndex + 1];
 
             Vector3 inAnchorOffset = endNode.InAnchor.Position - endNode.Position;
             Vector3 normalizedCurveDisplacement = (endNode.Position - startNode.Position).normalized;
@@ -451,9 +481,9 @@ namespace Regicide.Game.BattleFormation
             int midNodeIndex = startNodeIndex + 1;
             int endNodeIndex = startNodeIndex + 2;
 
-            BattleLineFormationNode startNode = _splineNodes[startNodeIndex];
-            BattleLineFormationNode midNode = _splineNodes[midNodeIndex];
-            BattleLineFormationNode endNode = _splineNodes[endNodeIndex];
+            BattleLineSplineNode startNode = _splineNodes[startNodeIndex];
+            BattleLineSplineNode midNode = _splineNodes[midNodeIndex];
+            BattleLineSplineNode endNode = _splineNodes[endNodeIndex];
 
             if (!midNode.IsSamePosition)
             {
@@ -472,7 +502,7 @@ namespace Regicide.Game.BattleFormation
         private void OffsetSplineNodePointsAt(int index, Vector3 offset)
         {
             int curveCount = CurveCount;
-            if (index <= curveCount)
+            if (index <= curveCount && index > 0)
             {
                 _splineNodes[index - 1].OutAnchor.OffsetPosition(offset);
                 for (int nodeIndex = index; nodeIndex < curveCount; nodeIndex++)
@@ -486,12 +516,23 @@ namespace Regicide.Game.BattleFormation
             }
         }
 
+        private void OffsetBattleLine(Vector3 offset)
+        {
+            int nodeIndex;
+            int curveIndex;
+
+            for (nodeIndex = 0; nodeIndex < _battleLineNodes.Length; nodeIndex++)
+            {
+
+            }
+        }
+
         private void InitializeSpline()
         {
-            BattleLineFormationNode startNode = new BattleLineFormationNode();
-            BattleLineFormationAnchor outAnchor = new BattleLineFormationAnchor();
-            BattleLineFormationAnchor inAnchor = new BattleLineFormationAnchor();
-            BattleLineFormationNode endNode = new BattleLineFormationNode();
+            BattleLineSplineNode startNode = new BattleLineSplineNode();
+            BattleLineSplineAnchor outAnchor = new BattleLineSplineAnchor();
+            BattleLineSplineAnchor inAnchor = new BattleLineSplineAnchor();
+            BattleLineSplineNode endNode = new BattleLineSplineNode();
 
             startNode.OutAnchor = outAnchor;
             endNode.InAnchor = inAnchor;
@@ -506,8 +547,8 @@ namespace Regicide.Game.BattleFormation
             inAnchor.SnapshotPosition();
             endNode.SnapshotPosition();
 
-            _battleLineNodes = new BattleLineFormationNode[2] { startNode, endNode };
-            _splineNodes = new List<BattleLineFormationNode>() { startNode, endNode };
+            _battleLineNodes = new BattleLineSplineNode[2] { startNode, endNode };
+            _splineNodes = new List<BattleLineSplineNode>() { startNode, endNode };
             _splineAnchorModes = new List<AnchorMode> { AnchorMode.CUBIC };
         }
 
@@ -526,9 +567,9 @@ namespace Regicide.Game.BattleFormation
             CalculateBattleLineSpline();
             if (Keyboard.current.mKey.wasPressedThisFrame)
             {
-                AppendFormationNode(new BattleLineFormationNode());
-                AppendFormationNode(new BattleLineFormationNode());
-                AppendFormationNode(new BattleLineFormationNode());
+                AppendFormationNode(new BattleLineSplineNode());
+                AppendFormationNode(new BattleLineSplineNode());
+                AppendFormationNode(new BattleLineSplineNode());
             }
             if (Keyboard.current.nKey.wasPressedThisFrame)
             {

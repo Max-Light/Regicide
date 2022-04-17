@@ -10,7 +10,7 @@ namespace Regicide.Game.BattleFormation
     {
         private const float _anchorSize = 0.04f;
         private const float _anchorPickSize = 0.06f;
-        private BattleLineFormationPoint _selectedPoint = null;
+        private BattleLinePoint _selectedPoint = null;
 
         public override void OnInspectorGUI()
         {
@@ -27,7 +27,7 @@ namespace Regicide.Game.BattleFormation
 
         private void DrawSpline(BattleLineFormationSpline battleLine)
         {
-            IReadOnlyList<BattleLineFormationNode> splineNodes = battleLine.SplineNodes;
+            IReadOnlyList<BattleLineSplineNode> splineNodes = battleLine.SplineNodes;
             Transform splineTransform = battleLine.transform;
 
             for (int curveIndex = 0; curveIndex < battleLine.CurveCount; curveIndex++)
@@ -46,7 +46,7 @@ namespace Regicide.Game.BattleFormation
 
         private void DrawSplinePoints(BattleLineFormationSpline battleLine)
         {
-            IReadOnlyList<BattleLineFormationNode> splineNodes = battleLine.SplineNodes;
+            IReadOnlyList<BattleLineSplineNode> splineNodes = battleLine.SplineNodes;
             if (battleLine.CurveCount > 0)
             {
                 int curveCount = battleLine.CurveCount;
@@ -63,7 +63,7 @@ namespace Regicide.Game.BattleFormation
             }
         }
 
-        private void DrawHandlePoint(BattleLineFormationSpline battleLine, BattleLineFormationPoint point)
+        private void DrawHandlePoint(BattleLineFormationSpline battleLine, BattleLinePoint point)
         {
             Transform splineTransform = battleLine.transform;
             Vector3 worldPoint = splineTransform.TransformPoint(point.Position);

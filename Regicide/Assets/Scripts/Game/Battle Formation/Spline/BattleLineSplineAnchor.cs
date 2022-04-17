@@ -1,12 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace Regicide.Game.BattleFormation
 {
     [System.Serializable]
-    public class BattleLineFormationAnchor : BattleLineFormationPoint
+    public class BattleLineSplineAnchor : BattleLinePoint
     {
         private Vector3 _previousPosition;
 
