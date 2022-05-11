@@ -8,19 +8,21 @@ namespace Regicide.Game.Player
 {
     public class GamePlayer : NetworkBehaviour
     {
+        [SerializeField] private Camera _mainCamera = null;
         [SerializeField] private Canvas _playerCanvas = null;
 
         private static GamePlayer _localGamePlayer = null;
 
-        private PlayerCameraController _playerCameraController = null;
+        private PlayerInputController _playerCameraController = null;
 
+        public Camera MainCamera { get => _mainCamera; }
         public string PlayerName { get; private set; } = "Player";
         public ulong SteamID { get; private set; } = 0;
 
         public static GamePlayer LocalGamePlayer { get => _localGamePlayer; }
         public static Dictionary<uint, GamePlayer> Players { get; private set; } = new Dictionary<uint, GamePlayer>();
 
-        public PlayerCameraController PlayerCameraController { get => _playerCameraController; }
+        public PlayerInputController PlayerInputControl { get => _playerCameraController; }
         public GamePlayerKingdom PlayerKingdom { get; private set; } = null;
 
         public enum Operation { ADD, REMOVE }
@@ -38,7 +40,7 @@ namespace Regicide.Game.Player
 
         protected void CreatePlayerCamera()
         {
-            _playerCameraController = new PlayerCameraController();
+            _playerCameraController = new PlayerInputController();
             _playerCameraController.Enable();
         }
 
