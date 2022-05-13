@@ -20,6 +20,7 @@ namespace Regicide.Game.BattleFormation
         {
             LinkNode(prevNode);
             _formationUnit = unit;
+            _formationUnit._formationNode = this;
         }
 
         public FormationNode(FormationNode prevNode, Vector3 position) : base(position) 

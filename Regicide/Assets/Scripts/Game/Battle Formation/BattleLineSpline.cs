@@ -565,6 +565,19 @@ namespace Regicide.Game.BattleFormation
             if (CurveCount > 0)
             {
                 UpdateBattleLineSpline();
+                
+                for (int i = 0; i < CurveCount; i++)
+                {
+                    BattleLineCurve curve = GetCurveInfo(i);
+                    FormationNode n = _splineNodes[i];
+                    for (int node = 0; node < curve.nodeCount - 1; node++)
+                    {
+                        
+                        n.Tangent = GetTangent(node / curve.nodeCount, i);
+                        n = n.NextNode;
+                    }
+                }
+                _splineNodes[CurveCount - 1].Tangent = GetTangent(1, CurveCount - 1);
             }
         }
 
