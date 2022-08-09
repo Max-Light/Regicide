@@ -17,7 +17,7 @@ namespace Regicide.Game.Player
         public void UpdateCameraRotation(PlayerCameraMovementController cameraControl)
         {
             Ray ray = cameraControl.PlayerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f));
-            if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, cameraControl.HoverableColliderLayers))
+            if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue))
             {
                 cameraControl.TargetTransform.RotateAround(hit.point, Vector3.up, _rotationalSpeed * _rotateDirection * Time.deltaTime);
             }

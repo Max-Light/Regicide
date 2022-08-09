@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using System.Threading;
+using Regicide.Game.Player;
 
 namespace Regicide.Game.Entity.Navigation
 {
@@ -320,7 +321,7 @@ namespace Regicide.Game.Entity.Navigation
 
         private void ScreenToNavigableWorldPosition(Vector2 screenPosition)
         {
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(screenPosition), out RaycastHit hit) && IsLayerInNavigableLayers(hit.transform.gameObject.layer))
+            if (Physics.Raycast(GamePlayer.LocalGamePlayer.MainCamera.ScreenPointToRay(screenPosition), out RaycastHit hit) && IsLayerInNavigableLayers(hit.transform.gameObject.layer))
             {
                 ClearPath();
                 if (_hasTrackAbility && hit.rigidbody != null)
@@ -560,7 +561,6 @@ namespace Regicide.Game.Entity.Navigation
             {
                 Quaternion targetRotation = Quaternion.FromToRotation(transform.eulerAngles, new Vector3(0, transform.eulerAngles.y, 0));
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, _alignmentRotationalSpeed * Time.fixedDeltaTime);
-                //transform.eulerAngles = Vector3.RotateTowards(transform.eulerAngles, new Vector3(0, transform.eulerAngles.y, 0), _terminalAngularSpeed * Time.fixedDeltaTime, 1);
             }
         }
 
@@ -621,7 +621,7 @@ namespace Regicide.Game.Entity.Navigation
             Gizmos.color = Color.magenta;
             for (int cornerIndex = 0; cornerIndex < _path.Length; cornerIndex++)
             {
-                Gizmos.DrawSphere(_path[cornerIndex], 0.5f);
+                Gizmos.DrawSphere(_path[cornerIndex], 3f);
             }
             for (int cornerIndex = 1; cornerIndex < _path.Length; cornerIndex++)
             {

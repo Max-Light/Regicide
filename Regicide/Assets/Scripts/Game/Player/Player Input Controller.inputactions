@@ -154,6 +154,34 @@
                     "isPartOfComposite": true
                 }
             ]
+        },
+        {
+            "name": "Battle Formation Control",
+            "id": "ec91dadb-351e-4ce8-8192-c87da7dc6ad0",
+            "actions": [
+                {
+                    "name": "Drag Control Point",
+                    "type": "PassThrough",
+                    "id": "9d71db9f-a4ec-48b9-83ec-dc0920e8da49",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e773211d-6b5c-482c-af99-bde63b6f4ae1",
+                    "path": "<Pointer>/press",
+                    "interactions": "Hold(duration=0.1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Drag Control Point",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

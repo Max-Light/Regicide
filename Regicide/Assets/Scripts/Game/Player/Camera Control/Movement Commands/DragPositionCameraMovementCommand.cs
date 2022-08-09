@@ -1,5 +1,6 @@
 using UnityEngine.InputSystem;
 using UnityEngine;
+using Regicide.Game.MapTerrain;
 
 namespace Regicide.Game.Player
 {
@@ -19,12 +20,12 @@ namespace Regicide.Game.Player
             RaycastHit hit;
 
             ray = camera.ViewportPointToRay(_originViewportPoint);
-            if (Physics.Raycast(ray, out hit, float.MaxValue, cameraControl.HoverableColliderLayers))
+            if (Physics.Raycast(ray, out hit, float.MaxValue) && MapEnvironment.IsTerrainCollider(hit.collider))
             {
                 Vector2 pointerScreenPosition = Pointer.current.position.ReadValue();
                 Vector3 dragOriginWorldPoint = new Vector3(hit.point.x, 0, hit.point.z);
                 ray = camera.ScreenPointToRay(pointerScreenPosition);
-                if (Physics.Raycast(ray, out hit, float.MaxValue, cameraControl.HoverableColliderLayers))
+                if (Physics.Raycast(ray, out hit, float.MaxValue) && MapEnvironment.IsTerrainCollider(hit.collider))
                 {
                     Vector3 dragPointerWorldPoint = new Vector3(hit.point.x, 0, hit.point.z);
 

@@ -17,7 +17,6 @@ namespace Regicide.Game.Player
         [SerializeField] private RotateCameraMovementCommand _rotateCommand = new RotateCameraMovementCommand();
 
         [Header("Camera Control")]
-        [SerializeField] private LayerMask _hoverableColliderLayers;
         [SerializeField] private float _hoverDistance = 35;
         [SerializeField] private Bounds _cameraBoundary;
 
@@ -25,10 +24,9 @@ namespace Regicide.Game.Player
 
         public Camera PlayerCamera { get => _camera; }
         public Transform TargetTransform { get => _targetTransform; }
-        public LayerMask HoverableColliderLayers { get => _hoverableColliderLayers; set => _hoverableColliderLayers = value; }
         public Bounds CameraBoundary { get => _cameraBoundary; set => _cameraBoundary = value; }
 
-        private void InitializeDirectMovement(PlayerCameraController cameraController) 
+        private void InitializeDirectMovement(PlayerInputController cameraController) 
         {
             cameraController.PlayerCameraMovement.DirectMove.started += context =>
             {
@@ -44,12 +42,12 @@ namespace Regicide.Game.Player
             };
         }
 
-        private void InitializeDragMovement(PlayerCameraController cameraController)
+        private void InitializeDragMovement(PlayerInputController cameraController)
         {
             cameraController.PlayerCameraMovement.DragMove.started += context =>
             {
                 _positionCommand = _dragPositionCommand;
-                _dragPositionCommand.SetOriginDragPoint(_camera.ScreenToViewportPoint(Pointer.current.position.ReadValue()));
+                _dragPositionCommand.SetOriginDragPoint(PlayerCamera.ScreenToViewportPoint(Pointer.current.position.ReadValue()));
             };
             cameraController.PlayerCameraMovement.DragMove.canceled += context =>
             {
@@ -57,7 +55,7 @@ namespace Regicide.Game.Player
             };
         }
 
-        private void InitializeZoomMovement(PlayerCameraController cameraController)
+        private void InitializeZoomMovement(PlayerInputController cameraController)
         {
             cameraController.PlayerCameraMovement.Zoom.performed += context =>
             {
@@ -66,7 +64,7 @@ namespace Regicide.Game.Player
             _zoomCommand.UpdateCameraZoom(this);
         }
 
-        private void InitializeRotateMovement(PlayerCameraController cameraController)
+        private void InitializeRotateMovement(PlayerInputController cameraController)
         {
             cameraController.PlayerCameraMovement.Rotate.performed += context =>
             {
@@ -83,8 +81,8 @@ namespace Regicide.Game.Player
             Vector3 cameraPosition = _targetTransform.position;
 
             float cameraHeight = cameraPosition.y - _cameraBoundary.min.y;
-            float cameraHeightWorldUnit = Mathf.Tan(Mathf.Deg2Rad * (_camera.fieldOfView / 2)) * cameraHeight * 2;
-            Vector2 cameraWorldUnitResolution = new Vector2(cameraHeightWorldUnit * _camera.aspect, cameraHeightWorldUnit);
+            float cameraHeightWorldUnit = Mathf.Tan(Mathf.Deg2Rad * (PlayerCamera.fieldOfView / 2)) * cameraHeight * 2;
+            Vector2 cameraWorldUnitResolution = new Vector2(cameraHeightWorldUnit * PlayerCamera.aspect, cameraHeightWorldUnit);
 
             float cameraRotateAngle = Mathf.Deg2Rad * _targetTransform.eulerAngles.y % 90;
             float side1 = Mathf.Abs(Mathf.Sin(cameraRotateAngle) * cameraWorldUnitResolution.x);
@@ -101,7 +99,7 @@ namespace Regicide.Game.Player
             float zOffset = -Mathf.Cos(cameraRotateAngle) * offsetMagnitude;
 
             float bottomBound = _cameraBoundary.min.y;
-            if (Physics.Raycast(_targetTransform.position + (-_targetTransform.forward * (_cameraBoundary.max.y - _cameraBoundary.min.y)), _targetTransform.forward, out RaycastHit hit, float.MaxValue, _hoverableColliderLayers))
+            if (Physics.Raycast(_targetTransform.position + (-_targetTransform.forward * (_cameraBoundary.max.y - _cameraBoundary.min.y)), _targetTransform.forward, out RaycastHit hit, float.MaxValue))
             {
                 bottomBound = hit.point.y + _hoverDistance;
             }
@@ -118,7 +116,7 @@ namespace Regicide.Game.Player
         private void Start()
         {
             _positionCommand = _directPositionCommand;
-            PlayerCameraController cameraController = GamePlayer.LocalGamePlayer.PlayerCameraController;
+            PlayerInputController cameraController = GamePlayer.LocalGamePlayer.PlayerInputControl;
             InitializeDirectMovement(cameraController);
             InitializeDragMovement(cameraController);
             InitializeZoomMovement(cameraController);
@@ -135,9 +133,12 @@ namespace Regicide.Game.Player
 
         private void OnValidate()
         {
-            float minBoundLength = Mathf.Min((_cameraBoundary.max.x - _cameraBoundary.min.x) / 2, (_cameraBoundary.max.z - _cameraBoundary.min.z) / 2);
-            float maxRadius = Mathf.Sqrt(Mathf.Pow(minBoundLength, 2) / (Mathf.Pow(_camera.aspect, 2) + 1));
-            _cameraBoundary.max = new Vector3(_cameraBoundary.max.x, Mathf.Clamp(_cameraBoundary.max.y, _cameraBoundary.min.y, (maxRadius / Mathf.Tan(Mathf.Deg2Rad * (_camera.fieldOfView / 2))) + _cameraBoundary.min.y), _cameraBoundary.max.z);
+            if (PlayerCamera != null)
+            {
+                float minBoundLength = Mathf.Min((_cameraBoundary.max.x - _cameraBoundary.min.x) / 2, (_cameraBoundary.max.z - _cameraBoundary.min.z) / 2);
+                float maxRadius = Mathf.Sqrt(Mathf.Pow(minBoundLength, 2) / (Mathf.Pow(PlayerCamera.aspect, 2) + 1));
+                _cameraBoundary.max = new Vector3(_cameraBoundary.max.x, Mathf.Clamp(_cameraBoundary.max.y, _cameraBoundary.min.y, (maxRadius / Mathf.Tan(Mathf.Deg2Rad * (PlayerCamera.fieldOfView / 2))) + _cameraBoundary.min.y), _cameraBoundary.max.z);
+            }
         }
 
         private void OnDrawGizmosSelected()

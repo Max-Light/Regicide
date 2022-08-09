@@ -45,7 +45,7 @@ namespace Regicide.Game.Player
             if (_scrollDelta != 0 && Pointer.current != null)
             {
                 Ray ray = cameraControl.PlayerCamera.ScreenPointToRay(Pointer.current.position.ReadValue());
-                if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, cameraControl.HoverableColliderLayers))
+                if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue))
                 {
                     Vector3 pointerToCameraOffset = hit.point - cameraControl.TargetTransform.position;
                     pointerToCameraOffset = new Vector3(pointerToCameraOffset.x, 0, pointerToCameraOffset.z);
@@ -65,7 +65,7 @@ namespace Regicide.Game.Player
 
             float heightFromHoverableCollider;
             Ray ray = cameraControl.PlayerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f));
-            if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, cameraControl.HoverableColliderLayers))
+            if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue))
             {
                 heightFromHoverableCollider = cameraControl.TargetTransform.position.y - hit.point.y;
             }
